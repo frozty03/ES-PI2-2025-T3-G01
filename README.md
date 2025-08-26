@@ -4,8 +4,8 @@ Aplicação web direcionada aos docentes para gerenciamento de instituicoes, tur
 
 ## Tecnologias
 - Backend: Node.js (TypeScript)
-- Frontend: HTML5 e CSS3
-- Banco de Dados: MySQL
+- Frontend: HTML5, CSS3 e Javascript
+- Banco de Dados: MySQ
 - Controle de Versão: Git + GitHub
 
 ## Funcionalidades principais
@@ -15,3 +15,10 @@ Aplicação web direcionada aos docentes para gerenciamento de instituicoes, tur
 - Lançamento de notas
 - Cálculo de notas finais
 - Exportação de dados em CSV/JSON
+
+## Equipe
+- Davi Alves Froza
+- Julia da Silva Maia
+- Lucas Presendo Canhete
+- Miguel Afonso Castro de Almeida
+- Pedro Henrique Bonetto da Costa
