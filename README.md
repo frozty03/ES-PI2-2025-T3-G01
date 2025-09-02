@@ -5,7 +5,7 @@ Aplicação web direcionada aos docentes para gerenciamento de instituicoes, tur
 ## Tecnologias
 - Backend: Node.js (TypeScript)
 - Frontend: HTML5, CSS3 e Javascript
-- Banco de Dados: MySQ
+- Banco de Dados: MySQL
 - Controle de Versão: Git + GitHub
 
 ## Funcionalidades principais
