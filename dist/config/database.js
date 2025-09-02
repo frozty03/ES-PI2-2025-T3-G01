@@ -3,7 +3,7 @@ export const db = mysql.createPool({
     host: "localhost",
     user: "root",
     password: "123456qwerty",
-    database: "PI6",
+    database: "PI2",
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,

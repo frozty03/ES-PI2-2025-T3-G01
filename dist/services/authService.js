@@ -1,4 +1,4 @@
-import { UserModel } from "../models/UserModel";
+import { UserModel } from "../models/userModel.js";
 export const AuthService = {
     async login(email, senha) {
         const user = await UserModel.findByEmail(email);
