@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="style.css">
     <title>Cadastro NotaDez</title>
 </head>
 <body>
     <div class="container">
         <div class="form-image">
-            <img src="../assets/img/undraw_teaching_58yg.svg"/>
+            <img src="undraw_teaching_58yg.svg"/>
         </div>
         <div class="form">
             <form action="#">
                 <div class="form-header">
                     <div class="title">
                         <h1>Cadastre-se</h1>
-                    </div>
-                    <div class="login-button">
-                        <button><a href="#">Entrar(telalogin)</a></button>
+                        <div class="login-button">
+                        <button><a href="login.html">Entrar</a></button>
+                        </div>
                     </div>
                 </div>
                 <div class="input-group">
@@ -52,6 +52,7 @@
                         <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirme sua senha" required>
                     </div>
                 </div>
+                
 
                 <div class="continue-button">
                     <button><a href="#">Continuar</a></button>
@@ -59,5 +60,35 @@
             </form>
         </div>
     </div>
+
+        <script>
+        document.getElementById('signup-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const firstName = document.getElementById('firstname').value;
+            const lastName = document.getElementById('lastname').value;
+            const email = document.getElementById('email').value;
+            const number = document.getElementById('number').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!firstName || !lastName || !email || !number || !password || !confirmPassword) {
+                alert('Parece que você esqueceu de preencher todos os campos.');
+                return;
+            }
+
+            if (!email.includes('@') || !email.includes('.')) {
+                alert('E-mail inválido, Falta "@" ou o ".".');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert('As senhas não conferem.');
+                return;
+            }
+            
+            alert('Cadastro realizado com sucesso! (teste)');
+        });
+    </script>
 </body>
 </html>
