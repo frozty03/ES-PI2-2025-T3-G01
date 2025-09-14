@@ -36,6 +36,15 @@ body {
     width: 31rem;
 }
 
+.title {
+    display: flex;
+    align-items: center;
+}
+.title img{
+    width:17.5%;
+    padding: 0.8rem;
+}
+
 .form {
     width: 50%;
     display: flex;
