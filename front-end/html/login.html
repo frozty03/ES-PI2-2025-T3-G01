@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../assets/css/styleLogin.css">
+    <link rel="stylesheet" href="styleLogin.css">
     <title>Cadastro NotaDez</title>
 </head>
 <body>
@@ -12,7 +12,7 @@
             <form action="#">
 
                 <div class="form-logo">
-                    <img src="../assets/img/LogoNotaDez.svg"/>
+                    <img src="LogoNotaDez.svg"/>
                 </div>
 
                 <div class="form-header">
@@ -28,20 +28,18 @@
                         <input type="email" id="email" name="email" placeholder="Digite seu email" required>
                     </div>
                     
-                    <div class="input-box">
-                        <div class="input-password-label">
-                            <label for="password">Senha:</label>
-                            <a href="#"><p>Esqueceu sua senha?</p></a>
-                        </div>
-                        <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
+                <div class="input-box">
+                    <div class="input-password-label">
+                    <label for="password">Senha:</label>
+                    <a href="recuperarsenha.html"><p>Esqueceu sua senha?</p></a>
+                </div>
+
+                    <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
+                </div>
+                    <div class="register-page">
+                    <a href="cadastro.html"><p>Criar nova conta</p></a>
                     </div>
                 </div>
-
-                <div class="register-page">
-                    <a href="#"><p>Criar nova conta</p></a>
-                </div>
-                
-
                 <div class="confirm-button">
                     <button><a href="#">Entrar</a></button>
                 </div>
@@ -49,5 +47,20 @@
             </form>
         </div>
     </div>
+    <script>
+        document.getElementById('login-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                alert('Esqueceu de preencher o e-mail ou a senha!');
+                return;
+            }
+
+            alert('Login efetuado! (Simulação)');
+        });
+    </script>
 </body>
 </html>
