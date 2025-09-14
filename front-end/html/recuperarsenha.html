@@ -20,8 +20,28 @@
     </form>
 
     <div class="links-container">
-       <a class="button-back" href="#">Voltar para o login</a>
+      <div class="links-container">
+      <a class="button-back" href="login.html">Voltar para o login</a>
     </div>
   </div>
+  <script>
+    document.getElementById('reset-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const email = document.getElementById('email').value;
+
+        if (!email) {
+            alert('Você precisa digitar um e-mail para recuperar a senha.');
+            return;
+        }
+
+        if (!email.includes('@') || !email.includes('.')) {
+            alert('e-mail parece que não é válido.');
+            return;
+        }
+
+        alert('Se esse e-mail existir no nosso sistema, um link de recuperação foi enviado!');
+    });
+</script>
 </body>
 </html>
