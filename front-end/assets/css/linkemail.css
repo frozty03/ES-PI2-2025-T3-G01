@@ -1,4 +1,6 @@
+/*fonte*/
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+/*cporpo site*/
 body{
     background-color: #3338a0;
     margin: 0%;
@@ -8,6 +10,7 @@ body{
     align-items: center;
     font-family: 'Inter', sans-serif;
 }
+/*layout caixa*/
 .container-box{
     background-color: #f7f7f7;
     padding: 100px;
@@ -16,6 +19,7 @@ body{
     width:370px;
     text-align: initial;
 }
+/*input de senha*/
 .container-box input{
 width: 100%;
   padding: 10px;
@@ -24,6 +28,7 @@ width: 100%;
   border: 1px solid #3338a0;
   box-sizing: border-box;
 }
+/*button submit*/
 .container-box button{
   position: relative;
   width: 100%;
@@ -35,8 +40,8 @@ width: 100%;
   margin: auto;
   position: relative;
 }
+/*logo layout*/
 .logo{
     width:100px;
-    
-  
 }
+
