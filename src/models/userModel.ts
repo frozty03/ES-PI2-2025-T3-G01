@@ -14,6 +14,3 @@ export const UserModel = {
     return rows.length > 0 ? rows[0] : null;
   },
 };
-
-
-
