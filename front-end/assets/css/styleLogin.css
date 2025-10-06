@@ -13,7 +13,7 @@ body {
     display:flex;
     justify-content: center;
     align-items: center;
-    background: #3338a0e1;
+    background: #3338A0;
 }
 
 .container {
@@ -119,14 +119,10 @@ body {
     width: 5rem;
     margin-top: 2rem;
     border: none;
-    background-color:#3338A0;
+    background-color: #3338A0;
     padding: 0.62rem;
     border-radius: 5px;
     cursor: pointer; 
-}
-
-.confirm-button button:hover {
-    background-color:#FCC61D;
 }
 
 .confirm-button button a {
@@ -134,6 +130,16 @@ body {
     font-size: 0.93rem;
     font-weight: 500;
     color: #f7f7f7;
+    display: block; 
+}
+
+.confirm-button button:hover {
+    background-color: #FCC61D;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.212);
+}
+
+.confirm-button button:hover a {
+    color: #3338A0;
 }
 
 .input-password-label
@@ -150,7 +156,8 @@ body {
 
 .input-password-label a:hover
 {
-    color: #FCC61D;
+    font-weight: bold;
+    text-shadow:  0px 0px 2px rgba(0, 0, 0, 0.412);
 }
 
 .register-page
@@ -168,7 +175,8 @@ body {
 
 .register-page a:hover
 {
-    color: #FCC61D;
+    font-weight: bold;
+    text-shadow:  0px 0px 2px rgba(0, 0, 0, 0.412);
 }
 
 .register-page p
