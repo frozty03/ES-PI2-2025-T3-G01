@@ -13,14 +13,15 @@ const app_service_1 = require("./app.service");
 const typeorm_1 = require("@nestjs/typeorm");
 const postgres_config_services_1 = require("./config/postgres.config.services");
 const config_1 = require("@nestjs/config");
+const user_module_1 = require("./users/user.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [
+        imports: [user_module_1.UserModule,
             config_1.ConfigModule.forRoot({
-                isGlobal: true
+                isGlobal: true,
             }),
             typeorm_1.TypeOrmModule.forRootAsync({
                 useClass: postgres_config_services_1.PostgresConfigService,
