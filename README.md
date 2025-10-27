@@ -6,7 +6,7 @@ Aplicação web direcionada aos docentes para gerenciamento de instituicoes, tur
 - Backend: Node.js (TypeScript)
 - Framework: Nest.js
 - Frontend: HTML5, CSS3 e Javascript
-- Banco de Dados: MySQL
+- Banco de Dados: PostgreSQL
 - Controle de Versão: Git + GitHub
 
 ## Funcionalidades principais
