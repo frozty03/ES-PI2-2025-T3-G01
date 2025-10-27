@@ -9,33 +9,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CriarUserDTO = void 0;
+exports.LoginUserDTO = void 0;
 const class_validator_1 = require("class-validator");
-class CriarUserDTO {
-    nome;
+class LoginUserDTO {
     email;
-    telefone_celular;
     senha;
 }
-exports.CriarUserDTO = CriarUserDTO;
+exports.LoginUserDTO = LoginUserDTO;
+__decorate([
+    (0, class_validator_1.IsEmail)(undefined, { message: 'O email informado eh invalido' }),
+    (0, class_validator_1.IsNotEmpty)({ message: 'O email nao pode ser vazio' }),
+    __metadata("design:type", String)
+], LoginUserDTO.prototype, "email", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsNotEmpty)({ message: 'A senha nao pode ser vazia' }),
     __metadata("design:type", String)
-], CriarUserDTO.prototype, "nome", void 0);
-__decorate([
-    (0, class_validator_1.IsEmail)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], CriarUserDTO.prototype, "email", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], CriarUserDTO.prototype, "telefone_celular", void 0);
-__decorate([
-    (0, class_validator_1.MinLength)(6, { message: 'Senha com no minimo seis caracteres!' }),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], CriarUserDTO.prototype, "senha", void 0);
-//# sourceMappingURL=criarUser.dto.js.map
+], LoginUserDTO.prototype, "senha", void 0);
+//# sourceMappingURL=loginUser.dto.js.map

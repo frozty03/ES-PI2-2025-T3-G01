@@ -1,4 +1,4 @@
-import { Post, Param, Query, Put, Res, Get, Controller, Body } from "@nestjs/common";
+import { Post, Param, Query, Put, Res, Get, Controller, Body, HttpCode, HttpStatus } from "@nestjs/common";
 import { v4 as uuid } from 'uuid';
 import { CriarUserDTO } from "./criarUser.dto";
 import { UserEntity } from "./user.entity";
@@ -6,6 +6,7 @@ import { UserService } from "./user.service";
 import { ListarUsuarioDTO } from "./listaUsuario.dto";
 import type { Response } from "express";
 import { join } from "path";
+import { LoginUserDTO } from "./loginUser.dto";
 @Controller('/usuarios')
 export class UserController {
     constructor(
@@ -32,6 +33,12 @@ export class UserController {
             usuario: new ListarUsuarioDTO(usuarioEntity.id, usuarioEntity.nome),
             message: 'Usuario criado com sucesso!'
         };
+    }
+
+    @HttpCode(HttpStatus.OK) // retorna 200 ao inves de 201
+    @Post('/login')
+    async login(@Body() loginUserDTO: LoginUserDTO) {
+        return this.usuarioService.login(loginUserDTO); // resultado do service de login do user, passando a info do user
     }
 
 }
