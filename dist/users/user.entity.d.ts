@@ -7,4 +7,5 @@ export declare class UserEntity {
     createAt: string;
     updatedAt: string;
     deletedAt: string;
+    hashPassword(): Promise<void>;
 }

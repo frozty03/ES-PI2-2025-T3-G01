@@ -19,10 +19,14 @@ const criarUser_dto_1 = require("./criarUser.dto");
 const user_entity_1 = require("./user.entity");
 const user_service_1 = require("./user.service");
 const listaUsuario_dto_1 = require("./listaUsuario.dto");
+const path_1 = require("path");
 let UserController = class UserController {
     usuarioService;
     constructor(usuarioService) {
         this.usuarioService = usuarioService;
+    }
+    serveCadastroPage(res) {
+        res.sendFile((0, path_1.join)(process.cwd(), 'public', 'html', 'cadastro.html'));
     }
     async criarUser(dadosDoUsuario) {
         const usuarioEntity = new user_entity_1.UserEntity();
@@ -31,7 +35,7 @@ let UserController = class UserController {
         usuarioEntity.nome = dadosDoUsuario.nome;
         usuarioEntity.telefone_celular = dadosDoUsuario.telefone_celular;
         usuarioEntity.id = (0, uuid_1.v4)();
-        this.usuarioService.createUser(usuarioEntity);
+        await this.usuarioService.createUser(usuarioEntity);
         return {
             usuario: new listaUsuario_dto_1.ListarUsuarioDTO(usuarioEntity.id, usuarioEntity.nome),
             message: 'Usuario criado com sucesso!'
@@ -40,7 +44,14 @@ let UserController = class UserController {
 };
 exports.UserController = UserController;
 __decorate([
-    (0, common_1.Post)(),
+    (0, common_1.Get)('/cadastro'),
+    __param(0, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], UserController.prototype, "serveCadastroPage", null);
+__decorate([
+    (0, common_1.Post)('/cadastro'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [criarUser_dto_1.CriarUserDTO]),

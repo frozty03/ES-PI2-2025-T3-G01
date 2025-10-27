@@ -3,24 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="icon" type="img/png" href="../assets/img/LogoNotaDez.svg">
+    <link rel="stylesheet" href="/assets/css/style.css"> 
+    <link rel="icon" type="img/png" href="/assets/img/LogoNotaDez.svg">
     <title>Cadastro NotaDez</title>
+    <style>
+        #message-area {
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            display: none; 
+            margin-top: 15px;
+        }
+        .message-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .message-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <div class="form-image">
-            <img src="../assets/img/undraw_teaching_58yg.svg"/>
+            <img src="/assets/img/undraw_teaching_58yg.svg"/>
         </div>
         <div class="form">
-            <form action="#">
+            <form id="cadastro-form">
                 <div class="form-header">
                     <div class="title">
-                        <img src="../assets/img/LogoNotaDez.svg"/>  
+                        <img src="/assets/img/LogoNotaDez.svg"/>
                         <h1>Cadastre-se</h1>
                     </div>
                     <div class="login-button">
-                        <button><a href="./login.html">Entrar</a></button>
+                        <button type="button"><a href="/html/login.html">Entrar</a></button>
                     </div>
                 </div>
                 <div class="input-group">
@@ -55,11 +73,75 @@
                     </div>
                 </div>
 
+                <div id="message-area"></div>
+                
                 <div class="continue-button">
-                    <button><a href="#">Continuar</a></button>
+                    <button type="submit">Continuar</button>
                 </div>
             </form>
         </div>
     </div>
+
+    <script>
+        const messageArea = document.getElementById('message-area');
+        const form = document.getElementById('cadastro-form');
+
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const firstName = document.getElementById('firstname').value;
+            const lastName = document.getElementById('lastname').value;
+            const email = document.getElementById('email').value;
+            const number = document.getElementById('number').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                showMessage('As senhas não coincidem!', 'error');
+                return; 
+            }
+
+            const dadosParaEnviar = {
+                nome: `${firstName} ${lastName}`, 
+                email: email,
+                telefone_celular: number, // 
+                senha: password
+            };
+
+            try {
+                // o app.enableCors() no main.ts
+                const response = await fetch('http://localhost:3000/usuarios/cadastro', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(dadosParaEnviar), // transforma em JSON
+                });
+
+                const resultado = await response.json();
+
+                if (!response.ok) {
+                    const erroMsg = Array.isArray(resultado.message) ? resultado.message.join(', ') : resultado.message;
+                    throw new Error(erroMsg || 'Error.');
+                }
+
+                showMessage(resultado.message, 'success');
+                form.reset();
+
+                setTimeout(() => {
+                    window.location.href = '/html/login.html'; 
+                }, 2000);
+
+            } catch (error) {
+                showMessage(error.message, 'error');
+            }
+        });
+
+        function showMessage(message, type) {
+            messageArea.textContent = message;
+            messageArea.className = `message-${type}`; // 'message-success' ou 'message-error'
+            messageArea.style.display = 'block'; // mostra a div
+        }
+    </script>
 </body>
 </html>

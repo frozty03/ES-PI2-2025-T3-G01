@@ -6,6 +6,9 @@ import { PostgresConfigService } from './config/postgres.config.services';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './users/user.module';
 import { UserEntity } from './users/user.entity';
+import { join } from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
+
 @Module({
   imports: [UserModule,
     ConfigModule.forRoot({
@@ -14,7 +17,10 @@ import { UserEntity } from './users/user.entity';
     TypeOrmModule.forRootAsync ({
       useClass: PostgresConfigService,
       inject: [PostgresConfigService]
-    })
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'public'),
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

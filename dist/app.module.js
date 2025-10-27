@@ -14,6 +14,8 @@ const typeorm_1 = require("@nestjs/typeorm");
 const postgres_config_services_1 = require("./config/postgres.config.services");
 const config_1 = require("@nestjs/config");
 const user_module_1 = require("./users/user.module");
+const path_1 = require("path");
+const serve_static_1 = require("@nestjs/serve-static");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -26,7 +28,10 @@ exports.AppModule = AppModule = __decorate([
             typeorm_1.TypeOrmModule.forRootAsync({
                 useClass: postgres_config_services_1.PostgresConfigService,
                 inject: [postgres_config_services_1.PostgresConfigService]
-            })
+            }),
+            serve_static_1.ServeStaticModule.forRoot({
+                rootPath: (0, path_1.join)(process.cwd(), 'public'),
+            }),
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
