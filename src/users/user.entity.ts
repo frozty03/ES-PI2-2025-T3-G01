@@ -10,7 +10,7 @@ export class UserEntity {
     @Column({ name: 'nome', length: 100, nullable: false}) // campo nome
     nome: string;
 
-    @Column({ name: 'email', length: 70, nullable: false}) // campo nome
+    @Column({ name: 'email', length: 70, nullable: false, unique: true }) // campo nome
     email: string;
 
     @Column({ name: 'telefone_celular', length: 20, nullable: false}) // campo nome

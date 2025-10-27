@@ -14,7 +14,7 @@ export class CriarUserDTO {
     @IsNotEmpty()
     telefone_celular: string;
 
-    @MinLength(6)
+    @MinLength(6, {message: 'Senha com no minimo seis caracteres!'})
     @IsNotEmpty()
     senha: string;
 }

@@ -69,7 +69,7 @@ __decorate([
     __metadata("design:type", String)
 ], UserEntity.prototype, "nome", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ name: 'email', length: 70, nullable: false }),
+    (0, typeorm_1.Column)({ name: 'email', length: 70, nullable: false, unique: true }),
     __metadata("design:type", String)
 ], UserEntity.prototype, "email", void 0);
 __decorate([

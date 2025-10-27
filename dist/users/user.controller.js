@@ -20,6 +20,7 @@ const user_entity_1 = require("./user.entity");
 const user_service_1 = require("./user.service");
 const listaUsuario_dto_1 = require("./listaUsuario.dto");
 const path_1 = require("path");
+const loginUser_dto_1 = require("./loginUser.dto");
 let UserController = class UserController {
     usuarioService;
     constructor(usuarioService) {
@@ -41,6 +42,9 @@ let UserController = class UserController {
             message: 'Usuario criado com sucesso!'
         };
     }
+    async login(loginUserDTO) {
+        return this.usuarioService.login(loginUserDTO);
+    }
 };
 exports.UserController = UserController;
 __decorate([
@@ -57,6 +61,14 @@ __decorate([
     __metadata("design:paramtypes", [criarUser_dto_1.CriarUserDTO]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "criarUser", null);
+__decorate([
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, common_1.Post)('/login'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [loginUser_dto_1.LoginUserDTO]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "login", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.Controller)('/usuarios'),
     __metadata("design:paramtypes", [user_service_1.UserService])

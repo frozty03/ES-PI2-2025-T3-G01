@@ -3,27 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../assets/css/styleLogin.css">
-    <link rel="icon" type="img/png" href="../assets/img/LogoNotaDez.svg">
-    <title>Cadastro NotaDez</title>
+    <link rel="stylesheet" href="/assets/css/styleLogin.css">
+    <link rel="icon" type="img/png" href="/assets/img/LogoNotaDez.svg">
+    <title>Login NotaDez</title>
+
+    <style>
+        #message-area {
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            display: none; 
+            margin-top: 15px;
+        }
+        .message-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .message-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <div class="form">
-            <form action="#">
+            <form id="login-form">
 
                 <div class="form-logo">
-                    <img src="../assets/img/LogoNotaDez.svg"/>
+                    <img src="/assets/img/LogoNotaDez.svg"/>
                 </div>
 
                 <div class="form-header">
                     <div class="title">
                         <h1>Entre no <span class="title-nota">Nota</span><span class="title-dez">Dez</span></h1>
                     </div>
-
                 </div>
-                <div class="input-group">
 
+                <div class="input-group">
                     <div class="input-box">
                         <label for="email">Email:</label>
                         <input type="email" id="email" name="email" placeholder="Digite seu email" required>
@@ -38,17 +56,74 @@
                     </div>
                 </div>
 
+                <div id="message-area"></div>
+
                 <div class="register-page">
-                    <a href="./cadastro.html"><p>Criar nova conta</p></a>
+                    <a href="/html/cadastro.html"><p>Criar nova conta</p></a>
                 </div>
                 
-
                 <div class="confirm-button">
-                    <button><a href="#">Entrar</a></button>
+                    <button type="submit">Entrar</button>
                 </div>
 
             </form>
         </div>
     </div>
+
+    <script>
+        const form = document.getElementById('login-form'); 
+        const messageArea = document.getElementById('message-area'); 
+
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault(); 
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const dadosParaEnviar = {
+                email: email,
+                senha: password
+            };
+
+            try {
+                const response = await fetch('http://localhost:3000/usuarios/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(dadosParaEnviar),
+                });
+
+                const resultado = await response.json();
+
+                // se der erro
+                if (!response.ok) {
+                    // pega a msg de erro que o nest mandou
+                    const erroMsg = resultado.message || 'Email ou senha inválidos.';
+                    throw new Error(erroMsg); 
+                }
+
+                showMessage('Login realizado com sucesso! Redirecionando...', 'success');
+                
+
+                //  guardar o token no navegador
+                localStorage.setItem('access_token', resultado.access_token);
+
+                setTimeout(() => {
+                    window.location.href = '/html/mainscreen.html'; 
+                }, 1500);
+
+            } catch (error) {
+                // mostra o erro na tela
+                showMessage(error.message, 'error');
+            }
+        });
+        
+        function showMessage(message, type) {
+            messageArea.textContent = message;
+            messageArea.className = `message-${type}`; // 'message-success' ou 'message-error'
+            messageArea.style.display = 'block';
+        }
+    </script>
 </body>
 </html>
