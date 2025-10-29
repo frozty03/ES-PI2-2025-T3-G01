@@ -4,8 +4,5 @@ export declare class UserEntity {
     email: string;
     telefone_celular: string;
     senha: string;
-    createAt: string;
-    updatedAt: string;
-    deletedAt: string;
     hashPassword(): Promise<void>;
 }

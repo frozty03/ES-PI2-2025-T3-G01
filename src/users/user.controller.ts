@@ -35,6 +35,11 @@ export class UserController {
         };
     }
 
+    @Get('/login')
+    serveLoginPage(@Res() res: Response) {
+        res.sendFile(join(process.cwd(), 'public', 'html', 'login.html'));
+    }
+
     @HttpCode(HttpStatus.OK) // retorna 200 ao inves de 201
     @Post('/login')
     async login(@Body() loginUserDTO: LoginUserDTO) {

@@ -51,9 +51,6 @@ let UserEntity = class UserEntity {
     email;
     telefone_celular;
     senha;
-    createAt;
-    updatedAt;
-    deletedAt;
     async hashPassword() {
         const salt = await bcrypt.genSalt();
         this.senha = await bcrypt.hash(this.senha, salt);
@@ -80,18 +77,6 @@ __decorate([
     (0, typeorm_1.Column)({ name: 'senha', length: 255, nullable: false }),
     __metadata("design:type", String)
 ], UserEntity.prototype, "senha", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)({ name: 'created_at' }),
-    __metadata("design:type", String)
-], UserEntity.prototype, "createAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)({ name: 'updated_at' }),
-    __metadata("design:type", String)
-], UserEntity.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.DeleteDateColumn)({ name: 'deleted_at' }),
-    __metadata("design:type", String)
-], UserEntity.prototype, "deletedAt", void 0);
 __decorate([
     (0, typeorm_1.BeforeInsert)(),
     __metadata("design:type", Function),
