@@ -8,13 +8,17 @@ import { UserModule } from './users/user.module';
 import { UserEntity } from './users/user.entity';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { InstituicaoModule } from './instituicoes/instituicao.module';
+import { InstituicaoEntity } from './instituicoes/instituicao.entity';
 
 @Module({
-  imports: [UserModule,
+  imports: [
+    UserModule,
+    InstituicaoModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    TypeOrmModule.forRootAsync ({
+    TypeOrmModule.forRootAsync({
       useClass: PostgresConfigService,
       inject: [PostgresConfigService]
     }),
