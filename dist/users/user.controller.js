@@ -21,6 +21,8 @@ const user_service_1 = require("./user.service");
 const listaUsuario_dto_1 = require("./listaUsuario.dto");
 const path_1 = require("path");
 const loginUser_dto_1 = require("./loginUser.dto");
+const esqueci_senha_dto_1 = require("./dto/esqueci-senha.dto");
+const resetar_senha_dto_1 = require("./dto/resetar-senha.dto");
 let UserController = class UserController {
     usuarioService;
     constructor(usuarioService) {
@@ -42,8 +44,33 @@ let UserController = class UserController {
             message: 'Usuario criado com sucesso!'
         };
     }
+    serveLoginPage(res) {
+        res.sendFile((0, path_1.join)(process.cwd(), 'public', 'html', 'login.html'));
+    }
     async login(loginUserDTO) {
         return this.usuarioService.login(loginUserDTO);
+    }
+    async esqueciSenha(esqueciSenhaDto) {
+        try {
+            return await this.usuarioService.esqueciSenha(esqueciSenhaDto);
+        }
+        catch (error) {
+            if (error instanceof common_1.HttpException) {
+                throw error;
+            }
+            throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async resetarSenha(resetarSenhaDto) {
+        try {
+            return await this.usuarioService.resetarSenha(resetarSenhaDto);
+        }
+        catch (error) {
+            if (error instanceof common_1.HttpException) {
+                throw error;
+            }
+            throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 };
 exports.UserController = UserController;
@@ -62,6 +89,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "criarUser", null);
 __decorate([
+    (0, common_1.Get)('/login'),
+    __param(0, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], UserController.prototype, "serveLoginPage", null);
+__decorate([
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, common_1.Post)('/login'),
     __param(0, (0, common_1.Body)()),
@@ -69,6 +103,22 @@ __decorate([
     __metadata("design:paramtypes", [loginUser_dto_1.LoginUserDTO]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "login", null);
+__decorate([
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, common_1.Post)('esqueci-senha'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [esqueci_senha_dto_1.EsqueciSenhaDto]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "esqueciSenha", null);
+__decorate([
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, common_1.Post)('resetar-senha'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [resetar_senha_dto_1.ResetarSenhaDto]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "resetarSenha", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.Controller)('/usuarios'),
     __metadata("design:paramtypes", [user_service_1.UserService])
