@@ -11,6 +11,7 @@ export declare class UserController {
         usuario: ListarUsuarioDTO;
         message: string;
     }>;
+    serveLoginPage(res: Response): void;
     login(loginUserDTO: LoginUserDTO): Promise<{
         acess_token: string;
         message: string;

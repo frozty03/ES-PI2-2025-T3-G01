@@ -42,6 +42,9 @@ let UserController = class UserController {
             message: 'Usuario criado com sucesso!'
         };
     }
+    serveLoginPage(res) {
+        res.sendFile((0, path_1.join)(process.cwd(), 'public', 'html', 'login.html'));
+    }
     async login(loginUserDTO) {
         return this.usuarioService.login(loginUserDTO);
     }
@@ -61,6 +64,13 @@ __decorate([
     __metadata("design:paramtypes", [criarUser_dto_1.CriarUserDTO]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "criarUser", null);
+__decorate([
+    (0, common_1.Get)('/login'),
+    __param(0, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], UserController.prototype, "serveLoginPage", null);
 __decorate([
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, common_1.Post)('/login'),
