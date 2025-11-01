@@ -14,6 +14,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const postgres_config_services_1 = require("./config/postgres.config.services");
 const config_1 = require("@nestjs/config");
 const user_module_1 = require("./users/user.module");
+const instituicao_module_1 = require("./instituicoes/instituicao.module");
 const path_1 = require("path");
 const serve_static_1 = require("@nestjs/serve-static");
 let AppModule = class AppModule {
@@ -21,7 +22,9 @@ let AppModule = class AppModule {
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [user_module_1.UserModule,
+        imports: [
+            user_module_1.UserModule,
+            instituicao_module_1.InstituicaoModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
             }),
