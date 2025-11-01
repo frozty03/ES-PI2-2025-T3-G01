@@ -5,12 +5,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostgresConfigService } from './config/postgres.config.services';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './users/user.module';
+import { InstituicaoModule } from './instituicoes/instituicao.module';
 import { UserEntity } from './users/user.entity';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
-  imports: [UserModule,
+  imports: [
+    UserModule,
+    InstituicaoModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
