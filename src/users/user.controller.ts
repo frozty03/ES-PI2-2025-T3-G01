@@ -49,10 +49,10 @@ export class UserController {
     }
 
     //ESQUECI SENHA ESTRUTURA
-  //onde o link é enviado
+    //onde o link é enviado
     @HttpCode(HttpStatus.OK)
     @Post('esqueci-senha')
-  //valida o email recebido
+    //valida o email recebido
     async esqueciSenha(@Body() esqueciSenhaDto: EsqueciSenhaDto) {
     // captura erros do envio de email
     try {
