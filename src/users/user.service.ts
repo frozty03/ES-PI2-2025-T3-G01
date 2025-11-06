@@ -70,8 +70,12 @@ export class UserService {
 
         const tokenAcesso = await this.jwtService.signAsync(payload);
 
+        //const idTeste = "ABC123";
+        //const nomeTeste = "Werbenjagermanjensen";
         return {
-            acess_token: tokenAcesso,
+            access_token: tokenAcesso,
+            id: usuario.id, // informações para personalização no front da tela principal
+            nome: usuario.nome,
             message: 'Login realizado com sucesso'
         };
     }
