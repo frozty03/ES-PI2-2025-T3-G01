@@ -1,0 +1,79 @@
+/*fonte*/
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+/*Modelo pagina*/
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: #b6b8bd;
+}
+
+/* Container da navbar topo */
+.navbar {
+    padding: 20px 30px;
+    background-color: #f7f7f7;
+     box-shadow: 0px 2px 4px rgba(0,0,0,0.2);
+}
+
+/* alinhar a imagem e o texto */
+.logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+/* Estilo imagem logo */
+.logo-img {
+    height: 40px; 
+    margin-right: 12px; 
+}
+
+/* Estilo do texto  */
+.logo h1 {
+    font-size: 28px;
+    color: #3338a0e1;
+    margin: 0;
+}
+
+/* caixa azul */
+.container {
+    display: flex; 
+}
+
+/* Estilo da barra azul */
+.sidebar {
+    width: 250px; 
+    background-color: #3338a0e1; 
+    color: #f7f7f7; 
+    padding: 25px;
+    /* Garante que a barra ocupe toda a altura da tela, descontando a navbar */
+    min-height: calc(100vh - 85px); 
+}
+
+/* Estilo da area principal onde fica a caixa branca*/
+.main-content {
+    flex-grow: 2; 
+    padding: 30px;
+}
+
+
+/* Caixa branca */
+.content-box {
+    background-color: #f7f7f7;
+    border-radius: 8px;
+    padding: 60px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    min-height: 300px;
+}
+
+/*botao de cadastrar*/
+.btn-cadastrar {
+    background-color: #fcc61d; 
+    color: #3338a0e1;               
+    font-size: 14px;            
+    font-weight: bold;          
+    padding: 10px 30px;         
+    border: none;               
+    border-radius: 19px;       
+    margin-bottom: 20px; 
+}

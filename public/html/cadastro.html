@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/assets/css/style.css"> 
+    <link rel="icon" type="img/png" href="/assets/img/LogoNotaDez.svg">
+    <title>Cadastro NotaDez</title>
+    <style>
+        #message-area {
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            display: none; 
+            margin-top: 15px;
+        }
+        .message-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .message-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-image">
+            <img src="/assets/img/undraw_teaching_58yg.svg"/>
+        </div>
+        <div class="form">
+            <form id="cadastro-form">
+                <div class="form-header">
+                    <div class="title">
+                        <img src="/assets/img/LogoNotaDez.svg"/>
+                        <h1>Cadastre-se</h1>
+                    </div>
+                    <div class="login-button">
+                        <button type="button"><a href="/html/login.html">Entrar</a></button>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <div class="input-box">
+                        <label for="firstname">Primeiro Nome:</label>
+                        <input type="text" id="firstname" name="firstname" placeholder="Digite seu primeiro nome" required>
+                    </div>
+                    
+                    <div class="input-box">
+                        <label for="lastname">Sobrenome:</label>
+                        <input type="text" id="lastname" name="lastname" placeholder="Digite seu sobrenome" required>
+                    </div>
+
+                    <div class="input-box">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" placeholder="Digite seu email" required>
+                    </div>
+
+                    <div class="input-box">
+                        <label for="number">Celular:</label>
+                        <input type="tel" id="number" name="number" placeholder="(xx) xxxx-xxxx" required>
+                    </div>
+                    
+                    <div class="input-box">
+                        <label for="password">Senha:</label>
+                        <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
+                    </div>
+
+                    <div class="input-box">
+                        <label for="confirmPassword">Confirme sua senha:</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirme sua senha" required>
+                    </div>
+                </div>
+
+                <div id="message-area"></div>
+                
+                <div class="continue-button">
+                    <button type="submit">Continuar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const messageArea = document.getElementById('message-area');
+        const form = document.getElementById('cadastro-form');
+
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const firstName = document.getElementById('firstname').value;
+            const lastName = document.getElementById('lastname').value;
+            const email = document.getElementById('email').value;
+            const number = document.getElementById('number').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                showMessage('As senhas não coincidem!', 'error');
+                return; 
+            }
+
+            const dadosParaEnviar = {
+                nome: `${firstName} ${lastName}`, 
+                email: email,
+                telefone_celular: number, // 
+                senha: password
+            };
+
+            try {
+                // o app.enableCors() no main.ts
+                const response = await fetch('http://localhost:3000/usuarios/cadastro', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(dadosParaEnviar), // transforma em JSON
+                });
+
+                const resultado = await response.json();
+
+                if (!response.ok) {
+                    const erroMsg = Array.isArray(resultado.message) ? resultado.message.join(', ') : resultado.message;
+                    throw new Error(erroMsg || 'Error.');
+                }
+
+                showMessage(resultado.message, 'success');
+                form.reset();
+
+                setTimeout(() => {
+                    window.location.href = '/html/login.html'; 
+                }, 2000);
+
+            } catch (error) {
+                showMessage(error.message, 'error');
+            }
+        });
+
+        function showMessage(message, type) {
+            messageArea.textContent = message;
+            messageArea.className = `message-${type}`; // 'message-success' ou 'message-error'
+            messageArea.style.display = 'block'; // mostra a div
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/assets/css/recuperarsenha.css">
+    <link rel="icon" type="img/png" href="/assets/img/LogoNotaDez.svg">
+    <title>NotaDez</title>
+</head>
+<body>
+
+    <div class="resetpassword-box">
+    <img src="/assets/img/LogoNotaDez.svg" class="logo">
+    <h2>Recuperar senha</h2>
+    <p class="message">Insira o email vinculado à conta e enviaremos um email de recuperação de senha</p>
+
+    <div id="message-area" class="message-area" style="display:none;"></div>
+
+    <form id="form-esqueci">
+      <input id="email" type="email" placeholder="Digite seu email" required>
+      <button type="submit">Enviar</button>
+    </form>
+
+    <div class="links-container">
+      <a class="button-back" href="/login.html">Voltar para o login</a>
+    </div>
+  </div>
+  <script>
+        //pega os elementos da pagina
+        const form = document.getElementById('form-esqueci');
+        const emailInput = document.getElementById('email');
+        const messageArea = document.getElementById('message-area');
+
+        //um comando para quando o usuario enviar
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const dados = { email: emailInput.value };
+
+            try {
+                //chama api e manda os dados
+                const response = await fetch('/usuarios/esqueci-senha', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                });
+
+                //resposta do bd
+                const resultado = await response.json();
+
+                //se retornar um erro, o email nao foi enviado
+                if (!response.ok) {
+                    throw new Error(resultado.message || 'Erro ao enviar.');
+                }
+
+                // Mostra a mensagem de sucesso 
+                showMessage(resultado.message, 'success');
+                form.reset();
+
+            } catch (error) {
+                showMessage(error.message, 'error');
+            }
+        //função de mostrar mensagem na tela
+        function showMessage(message, type) {
+            if (!messageArea) {
+                console.warn('messageArea element not found');
+                return;
+            }
+            messageArea.textContent = message;
+            messageArea.className = `message-${type}`;
+            messageArea.style.display = 'block';
+        }
+      })
+    </script>
+  </body>
+</html>

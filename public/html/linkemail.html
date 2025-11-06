@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/assets/css/linkemail.css">
+    <link rel="icon" type="img/png" href="/assets/img/LogoNotaDez.svg">
+    <title>NotaDez</title>
+</head>
+<body>
+    <div class="container-box">
+        <img src="/assets/img/LogoNotaDez.svg" class="logo">
+        <h3>Digite uma nova senha</h3>
+        <div id="message-area" style="display:none; padding: 10px; margin: 10px 0; border-radius: 5px;"></div>
+        <form id="form-reset">
+        <input type="password" id="senha" nome="senha" placeholder="Digite sua senha" required >
+        <h3>Confirme sua senha</h3>
+        <input type="password" id= "confirma" nome="confirma" placeholder="Confirme sua senha" required>
+        <div class="button-back">
+            <button type="submit">Enviar</button>
+        </div>
+        </form>
+    </div>
+</body>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        //captura os elementos da pagina
+        const form = document.getElementById('form-reset');
+        const novaSenhaInput = document.getElementById('senha');
+        const confirmaSenhaInput = document.getElementById('confirma');
+        const messageArea = document.getElementById('message-area');
+
+        // PEGAR O TOKEN DA URL
+        //le o endereço do navegador
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get('token');
+
+        //se o link nao tiver um token, aparece um erro
+        if (!token) {
+            showMessage('Token de redefinição não encontrado. Por favor, solicite um novo link.', 'error');
+        }
+
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            //pega os valores q o usuario digitou
+            const novaSenha = novaSenhaInput.value;
+            const confirmaSenha = confirmaSenhaInput.value;
+
+            // Verifica se as senhas sao iguais
+            if (novaSenha !== confirmaSenha) {
+                showMessage('As senhas não coincidem!', 'error');
+                return;
+            }
+            //verifica se a senha tem pelo menos 6 caracteres
+            if (novaSenha.length < 6) {
+                showMessage('A senha deve ter no mínimo 6 caracteres.', 'error');
+                return;
+            }
+
+            // Envia o token junto com as senhas
+            const dados = {
+                token: token,
+                novaSenha: novaSenha,
+                confirmaSenha: confirmaSenha
+            };
+
+            try {
+                //chama api 
+                const response = await fetch('/usuarios/resetar-senha', {
+                    method: 'POST',//envia dados
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                });
+                //pega a resposta do bd
+                const resultado = await response.json();
+
+                //se retornar erro, o token expirou
+                if (!response.ok) {
+                    throw new Error(resultado.message || 'Erro ao resetar senha.');
+                }
+
+                // bd conseguiu atualizar a senha
+                showMessage(resultado.message + ' Redirecionando para o login...', 'success');
+                form.reset();
+                
+
+                //manda o usuario para o login
+                setTimeout(() => {
+                    window.location.href = '/html/login.html'; // Redireciona para o login
+                }, 2000);
+
+            } catch (error) {
+                showMessage(error.message, 'error');
+            }
+        });
+
+        //função para mostrar mensagens na tela
+        function showMessage(message, type) {
+            messageArea.textContent = message;
+            messageArea.className = `message-${type}`;
+            messageArea.style.display = 'block';
+        }
+    });
+    </script>
+
+</html>
