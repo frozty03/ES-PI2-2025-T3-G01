@@ -7,7 +7,7 @@ export declare class CursoService {
     private readonly cursoRepository;
     private readonly instituicaoRepository;
     constructor(cursoRepository: Repository<CursoEntity>, instituicaoRepository: Repository<InstituicaoEntity>);
-    criarCurso(dto: CriarCursoDto): Promise<ListarCursoDto>;
-    listarCursosPorInstituicao(idInstituicao: string): Promise<ListarCursoDto[]>;
-    deletarCurso(id: string): Promise<void>;
+    criarCurso(dto: CriarCursoDto, userId: string): Promise<ListarCursoDto>;
+    listarCursosPorInstituicao(idInstituicao: string, userId: string): Promise<ListarCursoDto[]>;
+    deletarCurso(id: string, userId: string): Promise<void>;
 }

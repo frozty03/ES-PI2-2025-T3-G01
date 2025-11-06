@@ -12,10 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CursoEntity = void 0;
 const typeorm_1 = require("typeorm");
 const instituicao_entity_1 = require("../instituicoes/instituicao.entity");
+const disciplinas_entity_1 = require("../disciplinas/disciplinas.entity");
 let CursoEntity = class CursoEntity {
     id;
     nome;
     instituicoes;
+    disciplinas;
 };
 exports.CursoEntity = CursoEntity;
 __decorate([
@@ -30,6 +32,10 @@ __decorate([
     (0, typeorm_1.ManyToMany)(() => instituicao_entity_1.InstituicaoEntity, (instituicao) => instituicao.cursos),
     __metadata("design:type", Array)
 ], CursoEntity.prototype, "instituicoes", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => disciplinas_entity_1.DisciplinasEntity, (disciplinas) => disciplinas.cursos),
+    __metadata("design:type", Array)
+], CursoEntity.prototype, "disciplinas", void 0);
 exports.CursoEntity = CursoEntity = __decorate([
     (0, typeorm_1.Entity)({ name: 'Curso' })
 ], CursoEntity);

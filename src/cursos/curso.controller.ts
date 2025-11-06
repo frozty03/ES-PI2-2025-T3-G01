@@ -7,20 +7,26 @@ import { ListarCursoDto } from './listar-curso.dto';
 export class CursoController {
   constructor(private readonly cursoService: CursoService) {}
 
-  @Post()
-  async criarCurso(@Body() dto: CriarCursoDto): Promise<ListarCursoDto> {
-    return this.cursoService.criarCurso(dto);
+  @Post('/user/:userId')
+  async criarCurso(
+    @Param('userId') userId: string,
+    @Body() dto: CriarCursoDto): Promise<ListarCursoDto> {
+    return this.cursoService.criarCurso(dto, userId);
   }
 
-  @Get('instituicao/:idInstituicao')
+  @Get('instituicao/:idInstituicao/user/:userId') // validacao de que sera do usuario logado
   async listarCursosPorInstituicao(
     @Param('idInstituicao') idInstituicao: string,
+    @Param('userId') userId: string,
   ): Promise<ListarCursoDto[]> {
-    return this.cursoService.listarCursosPorInstituicao(idInstituicao);
+    return this.cursoService.listarCursosPorInstituicao(idInstituicao, userId);
   }
 
-  @Delete(':id')
-  async deletarCurso(@Param('id') id: string): Promise<void> {
-    return this.cursoService.deletarCurso(id);
+  @Delete(':id/user/userId')
+  async deletarCurso(
+    @Param('id') id: string,
+    @Param('userId') userId: string, 
+  ) : Promise<void> {
+    return this.cursoService.deletarCurso(id, userId);
   }
 }
