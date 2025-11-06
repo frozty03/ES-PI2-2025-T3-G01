@@ -19,13 +19,6 @@ export class UserEntity {
     @Column({ name: 'senha', length: 255, nullable: false}) // campo nome
     senha: string;
 
-    @CreateDateColumn({ name: 'created_at' })
-    createAt: string;
-    @UpdateDateColumn({ name: 'updated_at' })
-    updatedAt: string;
-    @DeleteDateColumn({ name: 'deleted_at' })
-    deletedAt: string;
-
     @BeforeInsert()
     async hashPassword() {
         const salt = await bcrypt.genSalt(); // salt eh um texto aleatorio que vai ser usado para criptografar
