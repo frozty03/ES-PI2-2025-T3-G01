@@ -13,7 +13,7 @@ exports.CriarCursoDto = void 0;
 const class_validator_1 = require("class-validator");
 class CriarCursoDto {
     nome;
-    idInstituicao;
+    instituicoesIds;
 }
 exports.CriarCursoDto = CriarCursoDto;
 __decorate([
@@ -23,8 +23,9 @@ __decorate([
     __metadata("design:type", String)
 ], CriarCursoDto.prototype, "nome", void 0);
 __decorate([
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsUUID)('4', { each: true }),
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], CriarCursoDto.prototype, "idInstituicao", void 0);
+    __metadata("design:type", Array)
+], CriarCursoDto.prototype, "instituicoesIds", void 0);
 //# sourceMappingURL=criar-curso.dto.js.map

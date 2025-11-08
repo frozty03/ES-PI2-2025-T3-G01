@@ -10,12 +10,14 @@ import { InstituicaoModule } from './instituicoes/instituicao.module';
 import { CursoModule } from './cursos/curso.module';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { DisciplinaModule } from './disciplinas/disciplina.module';
 
 @Module({
   imports: [
     UserModule,
     InstituicaoModule,
     CursoModule,
+    DisciplinaModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),

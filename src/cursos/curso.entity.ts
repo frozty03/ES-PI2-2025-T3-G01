@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';
 import { InstituicaoEntity } from '../instituicoes/instituicao.entity';
+import { DisciplinasEntity } from 'src/disciplinas/disciplinas.entity';
 
 @Entity({ name: 'Curso' })
 export class CursoEntity {
@@ -11,4 +12,7 @@ export class CursoEntity {
 
   @ManyToMany(() => InstituicaoEntity, (instituicao) => instituicao.cursos)
   instituicoes: InstituicaoEntity[];
+
+  @ManyToMany(() => DisciplinasEntity, (disciplinas) => disciplinas.cursos)
+  disciplinas: DisciplinasEntity[];
 }

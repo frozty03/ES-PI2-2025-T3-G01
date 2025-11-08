@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, Length } from 'class-validator';
+import { IsArray, IsNotEmpty, IsString, IsUUID, Length } from 'class-validator';
 
 export class CriarCursoDto {
   @IsNotEmpty()
@@ -6,7 +6,9 @@ export class CriarCursoDto {
   @Length(1, 150)
   nome: string;
 
+  // aceitar array de instituições
+  @IsArray()
+  @IsUUID('4', { each: true })
   @IsNotEmpty()
-  @IsString()
-  idInstituicao: string;
+  instituicoesIds: string[];
 }

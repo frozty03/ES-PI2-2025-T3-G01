@@ -21,36 +21,39 @@ let CursoController = class CursoController {
     constructor(cursoService) {
         this.cursoService = cursoService;
     }
-    async criarCurso(dto) {
-        return this.cursoService.criarCurso(dto);
+    async criarCurso(userId, dto) {
+        return this.cursoService.criarCurso(dto, userId);
     }
-    async listarCursosPorInstituicao(idInstituicao) {
-        return this.cursoService.listarCursosPorInstituicao(idInstituicao);
+    async listarCursosPorInstituicao(idInstituicao, userId) {
+        return this.cursoService.listarCursosPorInstituicao(idInstituicao, userId);
     }
-    async deletarCurso(id) {
-        return this.cursoService.deletarCurso(id);
+    async deletarCurso(id, userId) {
+        return this.cursoService.deletarCurso(id, userId);
     }
 };
 exports.CursoController = CursoController;
 __decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
+    (0, common_1.Post)('/user/:userId'),
+    __param(0, (0, common_1.Param)('userId')),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [criar_curso_dto_1.CriarCursoDto]),
+    __metadata("design:paramtypes", [String, criar_curso_dto_1.CriarCursoDto]),
     __metadata("design:returntype", Promise)
 ], CursoController.prototype, "criarCurso", null);
 __decorate([
-    (0, common_1.Get)('instituicao/:idInstituicao'),
+    (0, common_1.Get)('instituicao/:idInstituicao/user/:userId'),
     __param(0, (0, common_1.Param)('idInstituicao')),
+    __param(1, (0, common_1.Param)('userId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], CursoController.prototype, "listarCursosPorInstituicao", null);
 __decorate([
-    (0, common_1.Delete)(':id'),
+    (0, common_1.Delete)(':id/user/userId'),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Param)('userId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], CursoController.prototype, "deletarCurso", null);
 exports.CursoController = CursoController = __decorate([
