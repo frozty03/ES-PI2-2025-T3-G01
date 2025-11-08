@@ -1,2 +1,2 @@
-export declare class InstituicaoModule {
+export declare class TurmaModule {
 }

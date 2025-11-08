@@ -21,19 +21,46 @@ let TurmasController = class TurmasController {
     constructor(turmaService) {
         this.turmaService = turmaService;
     }
-    async create(userId, createTurmaDto) {
-        return await this.turmaService.createTurma(createTurmaDto, userId);
+    async criar(userId, createTurmaDTO) {
+        const turma = await this.turmaService.createTurma(createTurmaDTO, userId);
+        return {
+            turma,
+            message: 'Turma criada com sucesso!'
+        };
+    }
+    async listarPorDisciplina(disciplinaId, userId) {
+        return await this.turmaService.listarPorDisciplina(disciplinaId, userId);
+    }
+    async deletar(id, userId) {
+        return await this.turmaService.deletarTurma(id, userId);
     }
 };
 exports.TurmasController = TurmasController;
 __decorate([
-    (0, common_1.Post)('user/:userId'),
+    (0, common_1.Post)('/user/:userId'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
     __param(0, (0, common_1.Param)('userId')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, criarTurma_dto_1.CreateTurmaDto]),
     __metadata("design:returntype", Promise)
-], TurmasController.prototype, "create", null);
+], TurmasController.prototype, "criar", null);
+__decorate([
+    (0, common_1.Get)('disciplina/:disciplinaId/user/:userId'),
+    __param(0, (0, common_1.Param)('disciplinaId')),
+    __param(1, (0, common_1.Param)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], TurmasController.prototype, "listarPorDisciplina", null);
+__decorate([
+    (0, common_1.Delete)(':id/user/:userId'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Param)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], TurmasController.prototype, "deletar", null);
 exports.TurmasController = TurmasController = __decorate([
     (0, common_1.Controller)('turmas'),
     __metadata("design:paramtypes", [turma_service_1.TurmaService])

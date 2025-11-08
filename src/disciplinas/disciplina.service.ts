@@ -71,7 +71,7 @@ export class DisciplinaService {
         .leftJoinAndSelect('disciplina.cursos', 'cursos')
         .where('curso.id = :cursoId', { cursoId })
         .getMany();
-}
+    }
 
     async buscarDisciplinaId(id: string, userId: string): Promise<DisciplinasEntity> {
         const disciplina = await this.disciplinaRepository

@@ -6,21 +6,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.InstituicaoModule = void 0;
+exports.TurmaModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const turma_entity_1 = require("./turma.entity");
+const disciplinas_entity_1 = require("../disciplinas/disciplinas.entity");
 const turma_service_1 = require("./turma.service");
 const turma_controller_1 = require("./turma.controller");
-let InstituicaoModule = class InstituicaoModule {
+let TurmaModule = class TurmaModule {
 };
-exports.InstituicaoModule = InstituicaoModule;
-exports.InstituicaoModule = InstituicaoModule = __decorate([
+exports.TurmaModule = TurmaModule;
+exports.TurmaModule = TurmaModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([turma_entity_1.TurmaEntity])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([turma_entity_1.TurmaEntity, disciplinas_entity_1.DisciplinasEntity])],
         providers: [turma_service_1.TurmaService],
         controllers: [turma_controller_1.TurmasController],
         exports: [turma_service_1.TurmaService],
     })
-], InstituicaoModule);
+], TurmaModule);
 //# sourceMappingURL=turma.module.js.map

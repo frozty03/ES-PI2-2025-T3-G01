@@ -11,4 +11,4 @@ import { TurmasController } from './turma.controller';
   controllers: [TurmasController],
   exports: [TurmaService],
 })
-export class InstituicaoModule {}
+export class TurmaModule {}

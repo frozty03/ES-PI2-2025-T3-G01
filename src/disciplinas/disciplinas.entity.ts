@@ -27,6 +27,6 @@ export class DisciplinasEntity {
     })
     cursos: CursoEntity[];
 
-    @ManyToMany(() => TurmaEntity, (turmas) => turmas.disciplinas)
+    @ManyToMany(() => TurmaEntity, (turma) => turma.disciplinas)
     turmas: TurmaEntity[];
 }

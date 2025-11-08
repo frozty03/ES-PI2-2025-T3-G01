@@ -13,13 +13,14 @@ const disciplinas_entity_1 = require("./disciplinas.entity");
 const curso_entity_1 = require("../cursos/curso.entity");
 const disciplina_controller_1 = require("./disciplina.controller");
 const disciplina_service_1 = require("./disciplina.service");
+const turma_entity_1 = require("../turmas/turma.entity");
 let DisciplinaModule = class DisciplinaModule {
 };
 exports.DisciplinaModule = DisciplinaModule;
 exports.DisciplinaModule = DisciplinaModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([disciplinas_entity_1.DisciplinasEntity, curso_entity_1.CursoEntity])
+            typeorm_1.TypeOrmModule.forFeature([disciplinas_entity_1.DisciplinasEntity, curso_entity_1.CursoEntity, turma_entity_1.TurmaEntity])
         ],
         controllers: [disciplina_controller_1.DisciplinaController],
         providers: [disciplina_service_1.DisciplinaService],

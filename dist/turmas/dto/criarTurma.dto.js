@@ -14,13 +14,18 @@ const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
 class CreateTurmaDto {
     cod;
+    disciplinasIds;
 }
 exports.CreateTurmaDto = CreateTurmaDto;
 __decorate([
     (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsInt)(),
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.Length)(1, 150),
     __metadata("design:type", Number)
 ], CreateTurmaDto.prototype, "cod", void 0);
+__decorate([
+    (0, class_validator_1.IsArray)({ message: 'Disciplina deve ser um array' }),
+    (0, class_validator_1.IsUUID)('4', { each: true, message: 'Cada disciplina deve ter um ID UUID válido' }),
+    (0, class_validator_1.IsNotEmpty)({ message: 'Pelo menos uma disciplina deve ser informado' }),
+    __metadata("design:type", Array)
+], CreateTurmaDto.prototype, "disciplinasIds", void 0);
 //# sourceMappingURL=criarTurma.dto.js.map

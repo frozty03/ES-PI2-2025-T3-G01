@@ -3,5 +3,12 @@ import { CreateTurmaDto } from './dto/criarTurma.dto';
 export declare class TurmasController {
     private turmaService;
     constructor(turmaService: TurmaService);
-    create(userId: string, createTurmaDto: CreateTurmaDto): Promise<import("./turma.entity").TurmaEntity>;
+    criar(userId: string, createTurmaDTO: CreateTurmaDto): Promise<{
+        turma: import("./turma.entity").TurmaEntity;
+        message: string;
+    }>;
+    listarPorDisciplina(disciplinaId: string, userId: string): Promise<import("./turma.entity").TurmaEntity[]>;
+    deletar(id: string, userId: string): Promise<{
+        message: string;
+    }>;
 }
