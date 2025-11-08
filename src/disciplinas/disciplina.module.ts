@@ -5,7 +5,6 @@ import { CursoEntity } from "src/cursos/curso.entity";
 import { DisciplinaController } from "./disciplina.controller";
 import { DisciplinaService } from "./disciplina.service";
 
-
 @Module({
     imports: [
         TypeOrmModule.forFeature([DisciplinasEntity, CursoEntity])

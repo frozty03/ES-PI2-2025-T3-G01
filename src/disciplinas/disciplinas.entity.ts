@@ -1,6 +1,6 @@
 import { CursoEntity } from "src/cursos/curso.entity";
 import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
-
+import { TurmaEntity } from "src/turmas/turma.entity";
 
 @Entity({ name: 'Disciplinas '})
 export class DisciplinasEntity {
@@ -26,4 +26,7 @@ export class DisciplinasEntity {
         inverseJoinColumn: { name: 'id_curso', referencedColumnName: 'id' }
     })
     cursos: CursoEntity[];
+
+    @ManyToMany(() => TurmaEntity, (turmas) => turmas.disciplinas)
+    turmas: TurmaEntity[];
 }
