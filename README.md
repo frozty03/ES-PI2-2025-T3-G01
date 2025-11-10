@@ -11,11 +11,11 @@ Aplicação web direcionada aos docentes para gerenciamento de instituicoes, tur
 
 ## Funcionalidades principais
 - Cadastro e autenticação de professores
-- Gestão de instituições, disciplinas e turmas
-- Importação de alunos via CSV/JSON
+- Gestão de instituições, cursos, disciplinas e turmas
+- Importação de alunos via CSV
 - Lançamento de notas
-- Cálculo de notas finais
-- Exportação de dados em CSV/JSON
+- Cálculo de notas finais (Media simples ou ponderada)
+- Exportação de dados em CSV
 
 ## Equipe
 - Davi Alves Froza
