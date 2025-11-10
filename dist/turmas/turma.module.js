@@ -13,12 +13,13 @@ const turma_entity_1 = require("./turma.entity");
 const disciplinas_entity_1 = require("../disciplinas/disciplinas.entity");
 const turma_service_1 = require("./turma.service");
 const turma_controller_1 = require("./turma.controller");
+const aluno_entity_1 = require("../alunos/aluno.entity");
 let TurmaModule = class TurmaModule {
 };
 exports.TurmaModule = TurmaModule;
 exports.TurmaModule = TurmaModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([turma_entity_1.TurmaEntity, disciplinas_entity_1.DisciplinasEntity])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([turma_entity_1.TurmaEntity, disciplinas_entity_1.DisciplinasEntity, aluno_entity_1.AlunoEntity])],
         providers: [turma_service_1.TurmaService],
         controllers: [turma_controller_1.TurmasController],
         exports: [turma_service_1.TurmaService],
