@@ -25,25 +25,40 @@ let CursoService = class CursoService {
         this.cursoRepository = cursoRepository;
         this.instituicaoRepository = instituicaoRepository;
     }
-    async criarCurso(dto) {
-        const instituicao = await this.instituicaoRepository.findOne({
-            where: { id: dto.idInstituicao },
-            relations: ['cursos'],
+    async criarCurso(dto, userId) {
+        const instituicoes = await this.instituicaoRepository.findBy({
+            id: (0, typeorm_2.In)(dto.instituicoesIds)
         });
-        if (!instituicao) {
-            throw new common_1.NotFoundException('Instituição não encontrada');
+        if (instituicoes.length !== dto.instituicoesIds.length) {
+            throw new common_1.NotFoundException('Uma ou mais instituições não foram encontradas');
         }
-        const curso = this.cursoRepository.create({ nome: dto.nome });
-        await this.cursoRepository.save(curso);
-        instituicao.cursos = [...(instituicao.cursos || []), curso];
-        await this.instituicaoRepository.save(instituicao);
-        return { id: curso.id, nome: curso.nome };
-    }
-    async listarCursosPorInstituicao(idInstituicao) {
-        const instituicao = await this.instituicaoRepository.findOne({
-            where: { id: idInstituicao },
-            relations: ['cursos'],
+        const instituicoesDoUser = await this.instituicaoRepository
+            .createQueryBuilder('instituicao')
+            .innerJoin('instituicao.users', 'user')
+            .where('instituicao.id IN (:...ids)', { ids: dto.instituicoesIds })
+            .andWhere('user.id = :userId', { userId })
+            .getMany();
+        if (instituicoesDoUser.length !== dto.instituicoesIds.length) {
+            throw new common_1.UnauthorizedException('Uma ou mais instituições não pertencem a você');
+        }
+        const curso = this.cursoRepository.create({
+            nome: dto.nome,
+            instituicoes: instituicoes
         });
+        await this.cursoRepository.save(curso);
+        return {
+            id: curso.id,
+            nome: curso.nome,
+        };
+    }
+    async listarCursosPorInstituicao(idInstituicao, userId) {
+        const instituicao = await this.instituicaoRepository
+            .createQueryBuilder('instituicao')
+            .innerJoin('instituicao.users', 'user')
+            .where('instituicao.id = :idInstituicao', { idInstituicao })
+            .andWhere('user.id = :userId', { userId })
+            .leftJoinAndSelect('instituicao.cursos', 'cursos')
+            .getOne();
         if (!instituicao) {
             throw new common_1.NotFoundException('Instituição não encontrada');
         }
@@ -52,8 +67,14 @@ let CursoService = class CursoService {
             nome: curso.nome,
         }));
     }
-    async deletarCurso(id) {
-        const curso = await this.cursoRepository.findOne({ where: { id } });
+    async deletarCurso(id, userId) {
+        const curso = await this.cursoRepository
+            .createQueryBuilder('curso')
+            .innerJoin('curso.instituicoes', 'instituicao')
+            .innerJoin('instituicao.users', 'user')
+            .where('curso.id = :id', { id })
+            .andWhere('user.id = :userId', { userId })
+            .getOne();
         if (!curso) {
             throw new common_1.NotFoundException('Curso não encontrado');
         }

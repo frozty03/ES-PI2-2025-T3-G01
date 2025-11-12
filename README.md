@@ -6,16 +6,16 @@ Aplicação web direcionada aos docentes para gerenciamento de instituicoes, tur
 - Backend: Node.js (TypeScript)
 - Framework: Nest.js
 - Frontend: HTML5, CSS3 e Javascript
-- Banco de Dados: MySQL
+- Banco de Dados: PostgreSQL
 - Controle de Versão: Git + GitHub
 
 ## Funcionalidades principais
 - Cadastro e autenticação de professores
-- Gestão de instituições, disciplinas e turmas
-- Importação de alunos via CSV/JSON
+- Gestão de instituições, cursos, disciplinas e turmas
+- Importação de alunos via CSV
 - Lançamento de notas
-- Cálculo de notas finais
-- Exportação de dados em CSV/JSON
+- Cálculo de notas finais (Media simples ou ponderada)
+- Exportação de dados em CSV
 
 ## Equipe
 - Davi Alves Froza
