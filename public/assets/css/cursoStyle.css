@@ -32,8 +32,13 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid #4a4fdc;
+    padding: 1rem;
+    border-radius: 10px;
+    background-color: #ffffff; /* fundo claro */
+    color: #3338A0;
+    margin-bottom: 1rem;
+    justify-content: center;
+    margin-top: 10px;
 }
 
 .sidebar-header img {
@@ -43,18 +48,33 @@ body {
 .user-profile {
     padding: 1.5rem 0;
     border-bottom: 1px solid #4a4fdc;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .user-profile .user-label {
-    font-size: 0.9rem;
-    font-weight: 500;
+    font-size: 1.2rem;
+    font-weight: 600;
 }
 
 #user-name {
-    font-size: 1.1rem;
+    font-size: 1.3rem;
     font-weight: 700;
     display: block;
-    margin-top: 5px;
+    margin-top: 10px;
+    /* para nomes longos*/
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.title-nota
+{
+    color: #FCC61D;
+}
+.title-dez
+{
+    color: #3338A0;
 }
 
 .sidebar-nav {
