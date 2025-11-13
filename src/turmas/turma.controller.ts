@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Param, Post, HttpCode, HttpStatus, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, HttpCode, HttpStatus, Delete, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { TurmaService } from './turma.service';
 import { CreateTurmaDto } from './dto/criarTurma.dto';
 
@@ -36,5 +37,31 @@ export class TurmasController{
         @Param('userId') userId: string,
     ) {
         return await this.turmaService.deletarTurma(id, userId);
+    }
+
+    @Post(':turmaId/importar-alunos/user/:userId')
+    @HttpCode(HttpStatus.OK)
+    @UseInterceptors(FileInterceptor('arquivo'))
+    async importarAlunos(
+        @Param('turmaId') turmaId: string,
+        @Param('userId') userId: string,
+        @UploadedFile() arquivo: any,
+    ) {
+        if (!arquivo) {
+            throw new BadRequestException('Arquivo CSV não fornecido');
+        }
+
+        if (!arquivo.originalname.toLowerCase().endsWith('.csv')) {
+            throw new BadRequestException('Apenas arquivos CSV são aceitos');
+        }
+
+        // Converter buffer para string (UTF-8)
+        const csvContent = arquivo.buffer.toString('utf-8');
+
+        return await this.turmaService.importarAlunosCSV(
+            turmaId,
+            userId,
+            csvContent,
+        );
     }
 };
