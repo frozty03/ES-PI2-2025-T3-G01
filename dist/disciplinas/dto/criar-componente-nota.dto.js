@@ -9,24 +9,39 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CriarComponenteDTO = void 0;
+exports.CriarComponenteNotaDTO = void 0;
 const class_validator_1 = require("class-validator");
-const class_transformer_1 = require("class-transformer");
-class CriarComponenteDTO {
+class CriarComponenteNotaDTO {
     nome;
+    sigla;
+    descricao;
     peso;
+    id_disciplina;
 }
-exports.CriarComponenteDTO = CriarComponenteDTO;
+exports.CriarComponenteNotaDTO = CriarComponenteNotaDTO;
 __decorate([
-    (0, class_validator_1.IsNotEmpty)({ message: 'Nome deve ser preenchido!' }),
-    (0, class_validator_1.IsString)({ message: 'Nome deve ser uma string' }),
-    (0, class_validator_1.Length)(1, 150, { message: 'Nome deve ter entre 1 a 150 caracteres' }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(2, 150),
     __metadata("design:type", String)
-], CriarComponenteDTO.prototype, "nome", void 0);
+], CriarComponenteNotaDTO.prototype, "nome", void 0);
 __decorate([
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNotEmpty)({ message: 'Peso deve ser preenchido' }),
-    (0, class_validator_1.IsNumber)({}, { message: 'Peso deve ser um número' }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(1, 10),
+    __metadata("design:type", String)
+], CriarComponenteNotaDTO.prototype, "sigla", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(1, 255),
+    __metadata("design:type", String)
+], CriarComponenteNotaDTO.prototype, "descricao", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
-], CriarComponenteDTO.prototype, "peso", void 0);
+], CriarComponenteNotaDTO.prototype, "peso", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsUUID)(),
+    __metadata("design:type", String)
+], CriarComponenteNotaDTO.prototype, "id_disciplina", void 0);
 //# sourceMappingURL=criar-componente-nota.dto.js.map

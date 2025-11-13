@@ -1,6 +1,7 @@
 import { CursoEntity } from "src/cursos/curso.entity";
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany,OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { TurmaEntity } from "src/turmas/turma.entity";
+import { ComponenteNotaEntity } from "src/disciplinas/componente-nota.entity"
 
 @Entity({ name: 'Disciplinas '})
 export class DisciplinasEntity {
@@ -29,4 +30,7 @@ export class DisciplinasEntity {
 
     @ManyToMany(() => TurmaEntity, (turma) => turma.disciplinas)
     turmas: TurmaEntity[];
+    
+    @OneToMany(() => ComponenteNotaEntity, (componente) => componente.disciplina)
+    componentesNota: ComponenteNotaEntity[];
 }

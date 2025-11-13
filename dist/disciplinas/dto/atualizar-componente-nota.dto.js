@@ -1,3 +1,3 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-//# sourceMappingURL=componente-nota.module.js.map
+//# sourceMappingURL=atualizar-componente-nota.dto.js.map
