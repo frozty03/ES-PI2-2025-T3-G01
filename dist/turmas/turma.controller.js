@@ -14,6 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TurmasController = void 0;
 const common_1 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
 const turma_service_1 = require("./turma.service");
 const criarTurma_dto_1 = require("./dto/criarTurma.dto");
 let TurmasController = class TurmasController {
@@ -33,6 +34,16 @@ let TurmasController = class TurmasController {
     }
     async deletar(id, userId) {
         return await this.turmaService.deletarTurma(id, userId);
+    }
+    async importarAlunos(turmaId, userId, arquivo) {
+        if (!arquivo) {
+            throw new common_1.BadRequestException('Arquivo CSV não fornecido');
+        }
+        if (!arquivo.originalname.toLowerCase().endsWith('.csv')) {
+            throw new common_1.BadRequestException('Apenas arquivos CSV são aceitos');
+        }
+        const csvContent = arquivo.buffer.toString('utf-8');
+        return await this.turmaService.importarAlunosCSV(turmaId, userId, csvContent);
     }
 };
 exports.TurmasController = TurmasController;
@@ -61,6 +72,17 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], TurmasController.prototype, "deletar", null);
+__decorate([
+    (0, common_1.Post)(':turmaId/importar-alunos/user/:userId'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('arquivo')),
+    __param(0, (0, common_1.Param)('turmaId')),
+    __param(1, (0, common_1.Param)('userId')),
+    __param(2, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:returntype", Promise)
+], TurmasController.prototype, "importarAlunos", null);
 exports.TurmasController = TurmasController = __decorate([
     (0, common_1.Controller)('turmas'),
     __metadata("design:paramtypes", [turma_service_1.TurmaService])
