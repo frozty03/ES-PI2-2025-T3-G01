@@ -18,12 +18,15 @@ const typeorm_1 = require("@nestjs/typeorm");
 const disciplinas_entity_1 = require("./disciplinas.entity");
 const typeorm_2 = require("typeorm");
 const curso_entity_1 = require("../cursos/curso.entity");
+const componente_nota_service_1 = require("./componente-nota.service");
 let DisciplinaService = class DisciplinaService {
     disciplinaRepository;
     cursoRepository;
-    constructor(disciplinaRepository, cursoRepository) {
+    componenteNotaService;
+    constructor(disciplinaRepository, cursoRepository, componenteNotaService) {
         this.disciplinaRepository = disciplinaRepository;
         this.cursoRepository = cursoRepository;
+        this.componenteNotaService = componenteNotaService;
     }
     async criarDisciplina(criarDisciplinaDTO, userId) {
         const codigoExiste = await this.disciplinaRepository.findOne({
@@ -42,14 +45,23 @@ let DisciplinaService = class DisciplinaService {
         if (cursos.length !== criarDisciplinaDTO.cursosIds.length) {
             throw new common_1.NotFoundException('Um ou mais cursos informados nao foram encontradsos');
         }
-        const disciplina = this.disciplinaRepository.create({
+        let disciplina = this.disciplinaRepository.create({
             cod: criarDisciplinaDTO.cod,
             nome: criarDisciplinaDTO.nome,
             sigla: criarDisciplinaDTO.sigla,
             periodo: criarDisciplinaDTO.periodo,
             cursos: cursos
         });
-        return await this.disciplinaRepository.save(disciplina);
+        disciplina = await this.disciplinaRepository.save(disciplina);
+        if (criarDisciplinaDTO.componentesNota?.length) {
+            for (const comp of criarDisciplinaDTO.componentesNota) {
+                await this.componenteNotaService.criar({
+                    ...comp,
+                    id_disciplina: disciplina.id
+                });
+            }
+        }
+        return disciplina;
     }
     async listarPorCurso(cursoId, userId) {
         const curso = await this.cursoRepository
@@ -127,6 +139,7 @@ exports.DisciplinaService = DisciplinaService = __decorate([
     __param(0, (0, typeorm_1.InjectRepository)(disciplinas_entity_1.DisciplinasEntity)),
     __param(1, (0, typeorm_1.InjectRepository)(curso_entity_1.CursoEntity)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
-        typeorm_2.Repository])
+        typeorm_2.Repository,
+        componente_nota_service_1.ComponenteNotaService])
 ], DisciplinaService);
 //# sourceMappingURL=disciplina.service.js.map

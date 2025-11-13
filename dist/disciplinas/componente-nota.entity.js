@@ -11,10 +11,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ComponenteNotaEntity = void 0;
 const typeorm_1 = require("typeorm");
+const disciplinas_entity_1 = require("./disciplinas.entity");
 let ComponenteNotaEntity = class ComponenteNotaEntity {
     id;
     nome;
     peso;
+    sigla;
+    descricao;
+    disciplina;
 };
 exports.ComponenteNotaEntity = ComponenteNotaEntity;
 __decorate([
@@ -22,13 +26,29 @@ __decorate([
     __metadata("design:type", String)
 ], ComponenteNotaEntity.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ name: 'nome', length: 150, nullable: false }),
+    (0, typeorm_1.Column)({ length: 150 }),
     __metadata("design:type", String)
 ], ComponenteNotaEntity.prototype, "nome", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ name: 'peso', type: "numeric", precision: 4, scale: 2, nullable: false }),
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 4, scale: 2 }),
     __metadata("design:type", Number)
 ], ComponenteNotaEntity.prototype, "peso", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ length: 10 }),
+    __metadata("design:type", String)
+], ComponenteNotaEntity.prototype, "sigla", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ length: 255 }),
+    __metadata("design:type", String)
+], ComponenteNotaEntity.prototype, "descricao", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => disciplinas_entity_1.DisciplinasEntity, (disciplina) => disciplina.componentesNota, {
+        onDelete: 'NO ACTION',
+        onUpdate: 'NO ACTION',
+        nullable: false,
+    }),
+    __metadata("design:type", disciplinas_entity_1.DisciplinasEntity)
+], ComponenteNotaEntity.prototype, "disciplina", void 0);
 exports.ComponenteNotaEntity = ComponenteNotaEntity = __decorate([
     (0, typeorm_1.Entity)({ name: 'Componente_Nota' })
 ], ComponenteNotaEntity);
