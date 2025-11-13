@@ -12,10 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TurmaEntity = void 0;
 const typeorm_1 = require("typeorm");
 const disciplinas_entity_1 = require("../disciplinas/disciplinas.entity");
+const aluno_entity_1 = require("../alunos/aluno.entity");
 let TurmaEntity = class TurmaEntity {
     id;
     cod;
     disciplinas;
+    alunos;
 };
 exports.TurmaEntity = TurmaEntity;
 __decorate([
@@ -35,6 +37,10 @@ __decorate([
     }),
     __metadata("design:type", Array)
 ], TurmaEntity.prototype, "disciplinas", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => aluno_entity_1.AlunoEntity, (aluno) => aluno.turmas),
+    __metadata("design:type", Array)
+], TurmaEntity.prototype, "alunos", void 0);
 exports.TurmaEntity = TurmaEntity = __decorate([
     (0, typeorm_1.Entity)({ name: 'Turmas' })
 ], TurmaEntity);

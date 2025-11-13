@@ -20,6 +20,7 @@ const turma_module_1 = require("./turmas/turma.module");
 const path_1 = require("path");
 const serve_static_1 = require("@nestjs/serve-static");
 const disciplina_module_1 = require("./disciplinas/disciplina.module");
+const aluno_module_1 = require("./alunos/aluno.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -31,6 +32,7 @@ exports.AppModule = AppModule = __decorate([
             curso_module_1.CursoModule,
             disciplina_module_1.DisciplinaModule,
             turma_module_1.TurmaModule,
+            aluno_module_1.AlunoModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
             }),
