@@ -11,4 +11,9 @@ export declare class TurmasController {
     deletar(id: string, userId: string): Promise<{
         message: string;
     }>;
+    importarAlunos(turmaId: string, userId: string, arquivo: any): Promise<{
+        message: string;
+        alunosImportados: number;
+        alunosJaExistentes: number;
+    }>;
 }
