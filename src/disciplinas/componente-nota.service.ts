@@ -4,7 +4,6 @@ import { In, Repository } from "typeorm";
 import { ComponenteNotaEntity } from "./componente-nota.entity"
 import { CriarComponenteNotaDTO } from "./dto/criar-componente-nota.dto";
 import { DisciplinasEntity } from "./disciplinas.entity";
-import { AtualizarComponenteNotaDTO } from "./dto/atualizar-componente-nota.dto";
 
 @Injectable()
 export class ComponenteNotaService {
@@ -26,20 +25,6 @@ export class ComponenteNotaService {
         disciplina: disciplinaObj
     });
     return await this.componenteNotaRepository.save(componente);
-    }
-
-    async atualizar(id: string, dto: AtualizarComponenteNotaDTO): Promise<ComponenteNotaEntity> {
-    const componente = await this.componenteNotaRepository.findOne({ where: { id } });
-    if (!componente) throw new NotFoundException("Componente de nota não encontrado");
-
-    Object.assign(componente, dto);
-
-    return await this.componenteNotaRepository.save(componente);
-    }
-
-    async deletar(id: string): Promise<void> {
-    const result = await this.componenteNotaRepository.delete(id);
-    if (result.affected === 0) throw new NotFoundException("Componente de nota não encontrado");
     }
 }
 

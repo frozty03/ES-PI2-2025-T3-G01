@@ -13,6 +13,7 @@ import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { DisciplinaModule } from './disciplinas/disciplina.module';
 import { AlunoModule } from './alunos/aluno.module';
+import { NotasModule } from './notas/notas.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { AlunoModule } from './alunos/aluno.module';
     DisciplinaModule,
     TurmaModule,
     AlunoModule,
+    NotasModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
