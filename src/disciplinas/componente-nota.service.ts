@@ -8,14 +8,14 @@ import { AtualizarComponenteNotaDTO } from "./dto/atualizar-componente-nota.dto"
 
 @Injectable()
 export class ComponenteNotaService {
-  constructor(
-    @InjectRepository(ComponenteNotaEntity)
-    private readonly componenteNotaRepository: Repository<ComponenteNotaEntity>,
-    @InjectRepository(DisciplinasEntity)
-    private readonly disciplinaRepository: Repository<DisciplinasEntity>,
-  ) {}
+    constructor(
+        @InjectRepository(ComponenteNotaEntity)
+        private readonly componenteNotaRepository: Repository<ComponenteNotaEntity>,
+        @InjectRepository(DisciplinasEntity)
+        private readonly disciplinaRepository: Repository<DisciplinasEntity>,
+    ) {}
 
-  async criar(dto: CriarComponenteNotaDTO): Promise<ComponenteNotaEntity> {
+    async criar(dto: CriarComponenteNotaDTO): Promise<ComponenteNotaEntity> {
     const disciplinaObj = await this.disciplinaRepository.findOneBy({ id: dto.id_disciplina });
     if (!disciplinaObj) throw new NotFoundException('Disciplina não encontrada!');
     const componente = this.componenteNotaRepository.create({
@@ -29,17 +29,16 @@ export class ComponenteNotaService {
     }
 
     async atualizar(id: string, dto: AtualizarComponenteNotaDTO): Promise<ComponenteNotaEntity> {
-    const componente = await this.componenteNotaRepository.findOne({ where: { id } });
-    if (!componente) throw new NotFoundException("Componente de nota não encontrado");
+        const componente = await this.componenteNotaRepository.findOne({ where: { id } });
+        if (!componente) throw new NotFoundException("Componente de nota não encontrado");
 
-    Object.assign(componente, dto);
-
-    return await this.componenteNotaRepository.save(componente);
+        Object.assign(componente, dto);
+        return await this.componenteNotaRepository.save(componente);
     }
 
     async deletar(id: string): Promise<void> {
-    const result = await this.componenteNotaRepository.delete(id);
-    if (result.affected === 0) throw new NotFoundException("Componente de nota não encontrado");
+        const result = await this.componenteNotaRepository.delete(id);
+        if (result.affected === 0) throw new NotFoundException("Componente de nota não encontrado");
     }
 }
 

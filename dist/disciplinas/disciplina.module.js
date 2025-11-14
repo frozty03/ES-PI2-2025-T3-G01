@@ -16,6 +16,7 @@ const disciplina_service_1 = require("./disciplina.service");
 const turma_entity_1 = require("../turmas/turma.entity");
 const componente_nota_entity_1 = require("./componente-nota.entity");
 const componente_nota_service_1 = require("./componente-nota.service");
+const componente_nota_controller_1 = require("./componente-nota.controller");
 let DisciplinaModule = class DisciplinaModule {
 };
 exports.DisciplinaModule = DisciplinaModule;
@@ -24,7 +25,7 @@ exports.DisciplinaModule = DisciplinaModule = __decorate([
         imports: [
             typeorm_1.TypeOrmModule.forFeature([disciplinas_entity_1.DisciplinasEntity, curso_entity_1.CursoEntity, turma_entity_1.TurmaEntity, componente_nota_entity_1.ComponenteNotaEntity])
         ],
-        controllers: [disciplina_controller_1.DisciplinaController],
+        controllers: [disciplina_controller_1.DisciplinaController, componente_nota_controller_1.ComponenteNotaController],
         providers: [disciplina_service_1.DisciplinaService, componente_nota_service_1.ComponenteNotaService],
         exports: [disciplina_service_1.DisciplinaService]
     })
