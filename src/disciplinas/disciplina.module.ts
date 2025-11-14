@@ -7,12 +7,13 @@ import { DisciplinaService } from "./disciplina.service";
 import { TurmaEntity } from "src/turmas/turma.entity";
 import { ComponenteNotaEntity } from "./componente-nota.entity";
 import { ComponenteNotaService } from "./componente-nota.service";
+import { ComponenteNotaController } from "./componente-nota.controller";
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([DisciplinasEntity, CursoEntity, TurmaEntity,ComponenteNotaEntity])
     ],
-    controllers: [DisciplinaController],
+    controllers: [DisciplinaController,ComponenteNotaController],
     providers: [DisciplinaService, ComponenteNotaService],
     exports: [DisciplinaService]
 })
