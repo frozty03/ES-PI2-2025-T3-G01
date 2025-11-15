@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/public/assets/css/cursoStyle.css"> 
-    <link rel="icon" type="img/png" href="/public/assets/img/LogoNotaDez.svg">
+    <link rel="stylesheet" href="/assets/css/cursoStyle.css">
+    <link rel="icon" type="img/png" href="/assets/img/LogoNotaDez.svg">
     <title>Cursos - NotaDez</title>
 </head>
 <body>
     <div class="container">
         <aside class="sidebar">
             <div class="sidebar-header">
-                <img src="/public/assets/img/LogoNotaDez.svg" alt="Logo NotaDez">
-                <h2>NotaDez</h2>
+                <img src="/assets/img/LogoNotaDez.svg" alt="Logo NotaDez">
+                <h1><span class="title-nota">Nota</span><span class="title-dez">Dez</span></h1>
             </div>
             <div class="user-profile">
                 <span class="user-label">Usuário:</span>
@@ -20,7 +20,7 @@
             </div>
             <nav class="sidebar-nav" id="sidebar-nav">
                 <h3>Instituições:</h3>
-                </nav>
+            </nav>
         </aside>
 
         <main class="main-content">
@@ -30,7 +30,7 @@
                     <button class="btn-cadastrar" id="open-add-modal-btn">Cadastrar</button>
                 </header>
                 <section class="courses-grid" id="courses-grid">
-                    </section>
+                </section>
             </div>
         </main>
     </div>
@@ -64,217 +64,204 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-    const userNameSpan = document.getElementById('user-name');
-    const mainTitle = document.getElementById('main-title');
-    const addModal = document.getElementById('add-course-modal');
-    const deleteModal = document.getElementById('delete-confirm-modal');
-    const coursesGrid = document.getElementById('courses-grid');
-    const sidebarNav = document.getElementById('sidebar-nav');
+    document.addEventListener('DOMContentLoaded', () => {
+        const API_BASE = 'http://localhost:3000';
 
-    // Dados de exemplo (simulando o que viria do backend)
-    const dbData = {
-        institutions: [
-            { 
-                id: 1, nome: 'aaa', 
-                courses: [
-                    { id: 10, nome: 'xxx' },
-                    { id: 11, nome: 'yyy' },
-                    { id: 12, nome: 'zzz' }
-                ],
-                disciplines: [
-                    {id: 100, nome: 'xxx'}, {id: 101, nome: 'yyy'}
-                ],
-                turmas: [
-                    {id: 1000, nome: '1'}, {id: 1001, nome: '2'}
-                ]
-            },
-            { id: 2, nome: 'bbb', courses: [{ id: 20, nome: '+++' }] },
-            { id: 3, nome: 'ccc', courses: [] }
-        ]
-    };
-    
-    let currentInstitution;
-    let courses = [];
+        const userNameSpan = document.getElementById('user-name');
+        const mainTitle = document.getElementById('main-title');
+        const addModal = document.getElementById('add-course-modal');
+        const deleteModal = document.getElementById('delete-confirm-modal');
+        const coursesGrid = document.getElementById('courses-grid');
+        const sidebarNav = document.getElementById('sidebar-nav');
 
+        let currentInstitution = null;
+        let courses = [];
+        let institutions = [];
 
-    function getInstitutionFromURL() {
-        const params = new URLSearchParams(window.location.search);
-        const id = parseInt(params.get('inst_id')); 
-        
-        if (!id) {
-            currentInstitution = dbData.institutions[0];
-            console.warn("ID da instituição não encontrado na URL, usando fallback.");
-        } else {
-            currentInstitution = dbData.institutions.find(inst => inst.id === id);
-            
-            if (!currentInstitution) {
-                console.warn("ID da URL não encontrado no DB, usando fallback.");
-                currentInstitution = dbData.institutions[0];
+        const userId = localStorage.getItem('user_id');
+
+        function getInstitutionIdFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('inst_id');
+        }
+
+        // carrega nome do usuário
+        function displayUserName() {
+            const userName = localStorage.getItem('user_nome');
+            userNameSpan.textContent = userName || 'Visitante';
+        }
+
+        // carrega instituições do usuário na lateral
+        async function fetchInstitutionsAndRenderSidebar(selectedInstitutionId) {
+            try {
+                const res = await fetch(`${API_BASE}/instituicoes/user/${userId}`);
+                const data = await res.json();
+                institutions = data.instituicoes || [];
+
+                renderSidebar(selectedInstitutionId);
+                // pega a instituicao selecionada
+                currentInstitution = institutions.find(i => String(i.id) === String(selectedInstitutionId));
+                displayMainTitle();
+            } catch (err) {
+                sidebarNav.innerHTML = '<h3>Instituições:</h3><p>Erro ao carregar instituições.</p>';
             }
         }
-        
-        courses = currentInstitution.courses || [];
-    }
 
-    function displayUserName() {
-        const userName = localStorage.getItem('user_nome');
-        userNameSpan.textContent = userName || 'Visitante';
-    }
-
-    function displayMainTitle() {
-        mainTitle.textContent = `Cursos de ${currentInstitution.nome}`;
-    }
-
-
-    function renderSidebar() {
-        const ul = document.createElement('ul');
-        
-        dbData.institutions.forEach(inst => {
-            const li = document.createElement('li');
-            li.dataset.id = inst.id;
-
-            if (inst.id === currentInstitution.id) {
-                li.classList.add('institution-item');
-                li.innerHTML = `
-                    <span>${inst.nome}</span>
-                    <h4>Cursos:</h4>
-                    <ul>
-                        ${(inst.courses || []).map(c => `<li>${c.nome}</li>`).join('')}
-                        ${(inst.courses || []).length === 0 ? '<li>Nenhum curso</li>' : ''}
-                    </ul>
-                    <h4>Disciplinas:</h4>
-                    <ul>
-                        ${(inst.disciplines || []).map(d => `<li>${d.nome}</li>`).join('')}
-                        ${(inst.disciplines || []).length === 0 ? '<li>Nenhuma disciplina</li>' : ''}
-                    </ul>
-                     <h4>Turmas:</h4>
-                    <ul>
-                        ${(inst.turmas || []).map(t => `<li>${t.nome}</li>`).join('')}
-                        ${(inst.turmas || []).length === 0 ? '<li>Nenhuma turma</li>' : ''}
-                    </ul>
-                `;
-            } else {
-                li.innerHTML = `<span>${inst.nome}</span>`;
-            }
-            ul.appendChild(li);
-        });
-        sidebarNav.appendChild(ul);
-    }
-
-    function renderCourseGrid() {
-        coursesGrid.innerHTML = ''; 
-
-        courses.forEach(course => {
-            const card = document.createElement('div');
-            card.className = 'course-card';
-            card.dataset.id = course.id;
-            card.innerHTML = `
-                <span class="card-name">${course.nome}</span>
-                <div class="card-options">
-                    <button class="options-btn">⋮</button>
-                    <div class="options-menu">
-                        <button class="rename-btn">Renomear</button>
-                        <button class="delete-btn">Excluir</button>
-                    </div>
-                </div>
-            `;
-            coursesGrid.appendChild(card);
-        });
-    }
-
-    function renderAll() {
-        renderSidebar();
-        renderCourseGrid();
-    }
-
-
-    function addCourse(name) {
-        const newId = courses.length > 0 ? Math.max(...courses.map(c => c.id)) + 1 : 1;
-        courses.push({ id: newId, nome: name });
-        
-        sidebarNav.innerHTML = '<h3>Instituições:</h3>'; 
-        renderAll();
-    }
-
-    function deleteCourse(id) {
-        courses = courses.filter(course => course.id !== id);
-        
-        sidebarNav.innerHTML = '<h3>Instituições:</h3>'; 
-        renderAll();
-    }
-
-
-    function showModal(modal) {
-        modal.style.display = 'flex';
-    }
-
-    function hideModal(modal) {
-        modal.style.display = 'none';
-    }
-
-    document.getElementById('open-add-modal-btn').addEventListener('click', () => {
-        showModal(addModal);
-    });
-
-    document.getElementById('close-add-modal-btn').addEventListener('click', () => hideModal(addModal));
-    document.getElementById('cancel-add-btn').addEventListener('click', () => hideModal(addModal));
-
-    document.getElementById('add-course-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const input = document.getElementById('course-name');
-        if (input.value.trim()) {
-            addCourse(input.value.trim());
-            input.value = '';
-            hideModal(addModal);
-        }
-    });
-    
-    coursesGrid.addEventListener('click', (e) => {
-        if (e.target.classList.contains('options-btn')) {
-            const menu = e.target.nextElementSibling;
-            document.querySelectorAll('.options-menu').forEach(m => {
-                if(m !== menu) m.style.display = 'none';
+        function renderSidebar(selectedInstitutionId) {
+            sidebarNav.innerHTML = '<h3>Instituições:</h3>';
+            const ul = document.createElement('ul');
+            institutions.forEach(inst => {
+                const li = document.createElement('li');
+                li.dataset.id = inst.id;
+                li.textContent = inst.nome;
+                if (String(inst.id) === String(selectedInstitutionId)) {
+                    li.classList.add('institution-item');
+                }
+                ul.appendChild(li);
             });
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+            sidebarNav.appendChild(ul);
         }
 
-        if (e.target.classList.contains('delete-btn')) {
-            const card = e.target.closest('.course-card');
-            const id = parseInt(card.dataset.id);
-            const course = courses.find(c => c.id === id);
-
-            document.getElementById('course-to-delete-name').textContent = course.nome;
-            deleteModal.dataset.id = id; 
-            showModal(deleteModal);
-        }
-    });
-
-    document.getElementById('cancel-delete-btn').addEventListener('click', () => hideModal(deleteModal));
-    
-    document.getElementById('confirm-delete-btn').addEventListener('click', () => {
-        const idToDelete = parseInt(deleteModal.dataset.id);
-        deleteCourse(idToDelete);
-        hideModal(deleteModal);
-    });
-
-    sidebarNav.addEventListener('click', (e) => {
-        const li = e.target.closest('li');
-        if (li && li.dataset.id) {
-            const id = parseInt(li.dataset.id);
-            if (id !== currentInstitution.id) {
-                const inst = dbData.institutions.find(i => i.id === id);
-                window.location.href = `/html/cursos.html?inst_id=${id}&inst_name=${inst.nome}`;
+        // carrega cruso
+        async function fetchCoursesAndRenderGrid() {
+            const instId = getInstitutionIdFromURL();
+            try {
+                const res = await fetch(`${API_BASE}/cursos/instituicao/${instId}/user/${userId}`);
+                const data = await res.json();
+                courses = data || [];
+                renderCourseGrid();
+            } catch(err) {
+                coursesGrid.innerHTML = '<p>Erro ao carregar cursos.</p>';
             }
         }
+
+        function renderCourseGrid() {
+            coursesGrid.innerHTML = '';
+            if (!courses.length) {
+                coursesGrid.innerHTML = '<p>Nenhum curso cadastrado para esta instituição.</p>';
+                return;
+            }
+            courses.forEach(course => {
+                const card = document.createElement('div');
+                card.className = 'course-card';
+                card.dataset.id = course.id;
+                card.innerHTML = `
+                    <span class="card-name">${course.nome}</span>
+                    <div class="card-options">
+                        <button class="options-btn">⋮</button>
+                        <div class="options-menu">
+                            <button class="rename-btn">Renomear</button>
+                            <button class="delete-btn">Excluir</button>
+                        </div>
+                    </div>
+                `;
+                coursesGrid.appendChild(card);
+            });
+        }
+
+        function displayMainTitle() {
+            mainTitle.textContent = currentInstitution
+                ? `Cursos de ${currentInstitution.nome}`
+                : 'Cursos';
+        }
+
+        // adiciona um curso
+        async function addCourse(name) {
+            const instId = getInstitutionIdFromURL();
+            try {
+                const res = await fetch(`${API_BASE}/cursos/user/${userId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome: name, instituicoesIds: [instId] })
+                });
+                if (!res.ok) throw new Error('Erro ao criar curso');
+                await fetchCoursesAndRenderGrid();
+            } catch(err) {
+                alert('Erro ao cadastrar curso.');
+            }
+        }
+
+        async function deleteCourse(courseId) {
+            try {
+                const res = await fetch(`${API_BASE}/cursos/${courseId}/user/${userId}`, {
+                    method: 'DELETE'
+                });
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    throw new Error(errorText);
+                }
+                await fetchCoursesAndRenderGrid();
+            } catch (err) {
+                alert('Erro ao excluir curso:\n' + err.message);
+            }
+        }
+
+        function showModal(modal) {
+            modal.style.display = 'flex';
+        }
+        function hideModal(modal) {
+            modal.style.display = 'none';
+        }
+
+        document.getElementById('open-add-modal-btn').addEventListener('click', () => showModal(addModal));
+        document.getElementById('close-add-modal-btn').addEventListener('click', () => hideModal(addModal));
+        document.getElementById('cancel-add-btn').addEventListener('click', () => hideModal(addModal));
+
+        document.getElementById('add-course-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('course-name');
+            if (input.value.trim()) {
+                await addCourse(input.value.trim());
+                input.value = '';
+                hideModal(addModal);
+            }
+        });
+
+        // troca de instituição pela sidebar
+        sidebarNav.addEventListener('click', (e) => {
+            const li = e.target.closest('li');
+            if (li && li.dataset.id) {
+                const id = li.dataset.id;
+                if (id !== String(currentInstitution.id)) {
+                    window.location.href = `/html/cursos.html?inst_id=${id}`;
+                }
+            }
+        });
+
+        coursesGrid.addEventListener('click', (e) => {
+            if (e.target.classList.contains('options-btn')) {
+                const menu = e.target.nextElementSibling;
+                document.querySelectorAll('.options-menu').forEach(m => {
+                    if (m !== menu) m.style.display = 'none';
+                });
+                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+            }
+            if (e.target.classList.contains('delete-btn')) {
+                const card = e.target.closest('.course-card');
+                const id = card.dataset.id;
+                const course = courses.find(c => String(c.id) === String(id));
+                document.getElementById('course-to-delete-name').textContent = course.nome;
+                deleteModal.dataset.id = id;
+                showModal(deleteModal);
+            }
+        });
+
+        document.getElementById('cancel-delete-btn').addEventListener('click', () => hideModal(deleteModal));
+
+        document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+            const idToDelete = deleteModal.dataset.id;
+            await deleteCourse(idToDelete);
+            hideModal(deleteModal);
+        });
+
+        // ao abrir a tela
+        (async () => {
+            displayUserName();
+            const instId = getInstitutionIdFromURL();
+            await fetchInstitutionsAndRenderSidebar(instId);
+            await fetchCoursesAndRenderGrid();
+        })();
     });
-
-
-    getInstitutionFromURL();
-    displayUserName();
-    displayMainTitle();
-    renderAll();
-});
     </script>
 </body>
 </html>

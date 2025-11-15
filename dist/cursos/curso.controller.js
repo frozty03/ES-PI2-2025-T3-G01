@@ -49,7 +49,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], CursoController.prototype, "listarCursosPorInstituicao", null);
 __decorate([
-    (0, common_1.Delete)(':id/user/userId'),
+    (0, common_1.Delete)(':id/user/:userId'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Param)('userId')),
     __metadata("design:type", Function),
