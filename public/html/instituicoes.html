@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/assets/css/styles.css"> 
+    <link rel="icon" type="img/png" href="/assets/img/LogoNotaDez.svg">
+    <title>Painel NotaDez</title>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="/assets/img/LogoNotaDez.svg" alt="Logo NotaDez">
+                <h1><span class="title-nota">Nota</span><span class="title-dez">Dez</span></h1>
+            </div>
+            <div class="user-profile">
+                <span class="user-label">Usuário:</span>
+                <span id="user-name">Carregando...</span>
+            </div>
+            <nav class="sidebar-nav">
+                <h3>Instituições:</h3>
+                <ul id="institutions-sidebar-list">
+                    </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="content-card">
+                <header class="content-header">
+                    <h1>Instituições</h1>
+                    <button class="btn-cadastrar" id="open-add-modal-btn">Cadastrar</button>
+                </header>
+                <section class="institutions-grid" id="institutions-grid">
+                    </section>
+            </div>
+        </main>
+    </div>
+
+    <div id="add-institution-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-add-modal-btn">&times;</span>
+            <h2>Cadastrar Nova Instituição</h2>
+            <form id="add-institution-form">
+                <div class="input-box">
+                    <label for="institution-name">Nome da Instituição:</label>
+                    <input type="text" id="institution-name" placeholder="Digite o nome" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" id="cancel-add-btn">Cancelar</button>
+                    <button type="submit" class="btn-confirm">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="delete-confirm-modal" class="modal">
+        <div class="modal-content">
+            <h2>Confirmar Exclusão</h2>
+            <p>Você tem certeza que deseja excluir a instituição "<span id="institution-to-delete-name"></span>"?</p>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" id="cancel-delete-btn">Cancelar</button>
+                <button type="button" class="btn-confirm-delete" id="confirm-delete-btn">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // variáveis de teste
+        const userNameSpan = document.getElementById('user-name');
+        const addModal = document.getElementById('add-institution-modal');
+        const deleteModal = document.getElementById('delete-confirm-modal');
+        const institutionsGrid = document.getElementById('institutions-grid');
+        const sidebarList = document.getElementById('institutions-sidebar-list');
+
+        const API_URL = 'http://localhost:3000/instituicoes'; // ajuste a porta se necessário
+        const userId = localStorage.getItem('user_id');
+        let institutions = [];
+
+        // personaliza o nome do usuário
+        function displayUserName() {
+            const userName = localStorage.getItem('user_nome');
+            userNameSpan.textContent = userName || 'Visitante';
+        }
+
+        function renderAll() {
+            institutionsGrid.innerHTML = '';
+            sidebarList.innerHTML = '';
+
+            institutions.forEach(inst => {
+                // card principal
+                const card = document.createElement('div');
+                card.className = 'institution-card';
+                card.dataset.id = inst.id;
+                card.innerHTML = `
+                    <span class="card-name">${inst.nome}</span>
+                    <div class="card-options">
+                        <button class="options-btn">⋮</button>
+                        <div class="options-menu">
+                            <button class="rename-btn">Renomear</button>
+                            <button class="delete-btn">Excluir</button>
+                        </div>
+                    </div>
+                `;
+                institutionsGrid.appendChild(card);
+
+                // sidebar
+                const listItem = document.createElement('li');
+                listItem.textContent = inst.nome;
+                listItem.dataset.id = inst.id;
+                sidebarList.appendChild(listItem);
+            });
+        }
+
+        // chamada de rotas
+        async function fetchInstitutions() {
+            try {
+                const res = await fetch(`${API_URL}/user/${userId}`);
+                if (!res.ok) throw new Error('Erro ao carregar instituições');
+                const data = await res.json();
+                institutions = data.instituicoes || [];
+                renderAll();
+            } catch (err) {
+                console.error(err);
+                institutionsGrid.innerHTML = '<p>Erro ao carregar instituições.</p>';
+            }
+        }
+
+        async function createInstitution(name) {
+            try {
+                const res = await fetch(`${API_URL}/user/${userId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome: name }),
+                });
+                if (!res.ok) throw new Error('Erro ao cadastrar instituição');
+                const newInst = await res.json();
+                institutions.push(newInst);
+                renderAll();
+            } catch (err) {
+                console.error(err);
+                alert('Erro ao cadastrar instituição.');
+            }
+        }
+
+        async function deleteInstitution(id) {
+            try {
+                const res = await fetch(`${API_URL}/${id}/user/${userId}`, {
+                    method: 'DELETE',
+                });
+                if (!res.ok) throw new Error('Erro ao excluir instituição');
+                institutions = institutions.filter(inst => inst.id !== id);
+                renderAll();
+            } catch (err) {
+                console.error(err);
+                alert('Erro ao excluir instituição.');
+            }
+        }
+
+        // modais
+        function showModal(modal) {
+            modal.style.display = 'flex';
+        }
+
+        function hideModal(modal) {
+            modal.style.display = 'none';
+        }
+
+        // eventos
+        document.getElementById('open-add-modal-btn').addEventListener('click', () => showModal(addModal));
+        document.getElementById('close-add-modal-btn').addEventListener('click', () => hideModal(addModal));
+        document.getElementById('cancel-add-btn').addEventListener('click', () => hideModal(addModal));
+
+        document.getElementById('add-institution-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('institution-name');
+            const name = input.value.trim();
+            if (name) {
+                await createInstitution(name);
+                input.value = '';
+                hideModal(addModal);
+            }
+        });
+
+        institutionsGrid.addEventListener('click', (e) => {
+            // abrir menu de opções
+            if (e.target.classList.contains('options-btn')) {
+                const menu = e.target.nextElementSibling;
+                document.querySelectorAll('.options-menu').forEach(m => {
+                    if (m !== menu) m.style.display = 'none';
+                });
+                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+            }
+
+            // abrir modal de exclusão
+            if (e.target.classList.contains('delete-btn')) {
+                const card = e.target.closest('.institution-card');
+                const id = card.dataset.id;
+                const inst = institutions.find(i => i.id === id);
+                document.getElementById('institution-to-delete-name').textContent = inst.nome;
+                deleteModal.dataset.id = id;
+                showModal(deleteModal);
+            }
+        });
+
+        // para fechar as opções dos modais (caso estejam abertas) quando clicar em outra lugar que não seja uma opção
+        document.addEventListener('click', (e) => {
+            const isOptionsClick = e.target.closest('.card-options');
+            if (!isOptionsClick) {
+                document.querySelectorAll('.options-menu').forEach(m => m.style.display = 'none');
+            }
+        });
+
+        document.getElementById('cancel-delete-btn').addEventListener('click', () => hideModal(deleteModal));
+        document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+            const idToDelete = deleteModal.dataset.id;
+            await deleteInstitution(idToDelete);
+            hideModal(deleteModal);
+        });
+
+        // inicialização
+        displayUserName();
+        fetchInstitutions();
+
+        // para trocar de tela
+        institutionsGrid.addEventListener('click', (e) => {
+        // evita conflito com botões, só dá certo se clicar fora dos botões de opções
+        if (e.target.classList.contains('options-btn') || e.target.classList.contains('rename-btn') || e.target.classList.contains('delete-btn')) {
+            return;
+        }
+
+        // pega o card
+        const card = e.target.closest('.institution-card');
+        if (card) {
+            const instId = card.dataset.id;
+            const inst = institutions.find(i => String(i.id) === String(instId));
+            window.location.href = `/html/cursos.html?inst_id=${instId}&inst_name=${encodeURIComponent(inst.nome)}`;
+            }
+        });
+
+        });
+    </script>
+</body>
+</html>

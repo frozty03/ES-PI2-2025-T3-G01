@@ -8,9 +8,11 @@ import { UserModule } from './users/user.module';
 import { InstituicaoModule } from './instituicoes/instituicao.module';
 // import { UserEntity } from './users/user.entity';
 import { CursoModule } from './cursos/curso.module';
+import { TurmaModule } from './turmas/turma.module';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { DisciplinaModule } from './disciplinas/disciplina.module';
+import { AlunoModule } from './alunos/aluno.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { DisciplinaModule } from './disciplinas/disciplina.module';
     InstituicaoModule,
     CursoModule,
     DisciplinaModule,
+    TurmaModule,
+    AlunoModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),

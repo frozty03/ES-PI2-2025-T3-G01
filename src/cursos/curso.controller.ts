@@ -22,7 +22,7 @@ export class CursoController {
     return this.cursoService.listarCursosPorInstituicao(idInstituicao, userId);
   }
 
-  @Delete(':id/user/userId')
+  @Delete(':id/user/:userId')
   async deletarCurso(
     @Param('id') id: string,
     @Param('userId') userId: string, 

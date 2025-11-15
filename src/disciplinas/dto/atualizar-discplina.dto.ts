@@ -4,7 +4,7 @@ import { IsArray, IsNumber, IsOptional, IsString, IsUUID, Length } from "class-v
 export class AtualizarDisciplinaDTO {
     @IsOptional()
     @IsNumber({}, { message: 'Código deve ser um número'})
-    codigo?: number; // ? indica q eh opcional
+    codigo?: number; // ? indica que é opcional
 
     @IsOptional()
     @IsString()
@@ -22,7 +22,7 @@ export class AtualizarDisciplinaDTO {
     periodo?: string;
 
     @IsOptional()
-    @IsArray() // sera convertido automatico em array
+    @IsArray() // será convertido automaticamente em array
     @IsUUID('4', { each: true, message: 'Cada curso deve ter um ID UUID válido' })
-    cursosIds?: string[]; // para adicionar ou retirar cursos que contem essa disciplina 
+    cursosIds?: string[]; // para adicionar ou retirar cursos que contém essa disciplina 
 }   

@@ -99,7 +99,9 @@ let UserService = class UserService {
         };
         const tokenAcesso = await this.jwtService.signAsync(payload);
         return {
-            acess_token: tokenAcesso,
+            access_token: tokenAcesso,
+            id: usuario.id,
+            nome: usuario.nome,
             message: 'Login realizado com sucesso'
         };
     }

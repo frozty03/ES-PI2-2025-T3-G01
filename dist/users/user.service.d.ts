@@ -13,7 +13,9 @@ export declare class UserService {
     constructor(usuarioRepository: Repository<UserEntity>, jwtService: JwtService, configService: ConfigService);
     createUser(usuarioEntity: UserEntity): Promise<void>;
     login(loginUserDTO: LoginUserDTO): Promise<{
-        acess_token: string;
+        access_token: string;
+        id: string;
+        nome: string;
         message: string;
     }>;
     esqueciSenha(esqueciSenhaDto: EsqueciSenhaDto): Promise<{
