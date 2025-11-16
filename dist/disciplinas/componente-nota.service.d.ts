@@ -10,4 +10,5 @@ export declare class ComponenteNotaService {
     criar(dto: CriarComponenteNotaDTO): Promise<ComponenteNotaEntity>;
     atualizar(id: string, dto: AtualizarComponenteNotaDTO): Promise<ComponenteNotaEntity>;
     deletar(id: string): Promise<void>;
+    deletarPorDisciplinaId(disciplinaId: string): Promise<void>;
 }

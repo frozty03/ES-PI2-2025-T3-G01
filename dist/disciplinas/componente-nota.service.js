@@ -50,6 +50,9 @@ let ComponenteNotaService = class ComponenteNotaService {
         if (result.affected === 0)
             throw new common_1.NotFoundException("Componente de nota não encontrado");
     }
+    async deletarPorDisciplinaId(disciplinaId) {
+        await this.componenteNotaRepository.delete({ disciplina: { id: disciplinaId } });
+    }
 };
 exports.ComponenteNotaService = ComponenteNotaService;
 exports.ComponenteNotaService = ComponenteNotaService = __decorate([

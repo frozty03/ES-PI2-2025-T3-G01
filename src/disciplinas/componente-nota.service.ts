@@ -40,5 +40,9 @@ export class ComponenteNotaService {
         const result = await this.componenteNotaRepository.delete(id);
         if (result.affected === 0) throw new NotFoundException("Componente de nota não encontrado");
     }
+
+    async deletarPorDisciplinaId(disciplinaId: string): Promise<void> {
+        await this.componenteNotaRepository.delete({ disciplina: { id: disciplinaId } });
+    }
 }
 

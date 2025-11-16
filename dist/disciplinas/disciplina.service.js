@@ -129,6 +129,7 @@ let DisciplinaService = class DisciplinaService {
     }
     async deletar(id, userId) {
         const disciplina = await this.buscarDisciplinaId(id, userId);
+        await this.componenteNotaService.deletarPorDisciplinaId(disciplina.id);
         await this.disciplinaRepository.remove(disciplina);
         return { message: 'Disciplina excluida com sucesso' };
     }

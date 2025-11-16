@@ -150,8 +150,8 @@ export class DisciplinaService {
     async deletar(id: string, userId: string): Promise<{ message: string }> {
         const disciplina = await this.buscarDisciplinaId(id, userId);
 
+        await this.componenteNotaService.deletarPorDisciplinaId(disciplina.id); // precisa deleter os componenentes antes pq o banco de dados n tá com delete on cascade (até melhor pra ter um conrole melhor do que tá acontecendo)
         await this.disciplinaRepository.remove(disciplina);
-
         return { message: 'Disciplina excluida com sucesso' };
     }
 }
