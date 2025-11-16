@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../assets/css/styleDisciplinas.css"> 
+    <link rel="stylesheet" href="../assets/css/styleNotas.css"> 
     <link rel="icon" type="img/png" href="/assets/img/LogoNotaDez.svg">
-    <title>Disciplinas - NotaDez</title>
+    <title>Turma - NotaDez</title>
 </head>
 <body>
     <div class="container">
@@ -38,7 +38,7 @@
     <div id="add-discipline-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" id="close-add-modal-btn">&times;</span>
-            <h2>Cadastrar Nova Disciplina</h2>
+            <h2>Cadastrar Novo Aluno</h2>
             <form id="add-discipline-form">
                 <div class="input-box">
                     <label for="discipline-code">Código:</label>
@@ -336,20 +336,7 @@
                 showModal(deleteModal);
                 return;
             }
-            // mudando de tela
-            if (!e.target.classList.contains('options-btn') &&
-                    !e.target.classList.contains('edit-btn') &&
-                    !e.target.classList.contains('delete-btn')) {
-                    
-                    const card = e.target.closest('.discipline-card');
-                    if (card) {
-                        const disciplinaId = card.dataset.id;
-                        const disciplina = disciplines.find(d => String(d.id) === String(disciplinaId));
-                        window.location.href = `/html/turmas.html?disciplina_id=${disciplinaId}&disciplina_nome=${encodeURIComponent(disciplina.nome)}`;
-                    }
-                }
-            });
-
+        });
 
         document.getElementById('cancel-delete-btn').addEventListener('click', () => hideModal(deleteModal));
 

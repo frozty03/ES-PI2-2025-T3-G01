@@ -66,253 +66,204 @@
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // --- VARIÁVEIS E ELEMENTOS ---
-        const userNameSpan = document.getElementById('user-name');
-        const addModal = document.getElementById('add-institution-modal');
-        const deleteModal = document.getElementById('delete-confirm-modal');
-        const institutionsGrid = document.getElementById('institutions-grid');
-        const sidebarList = document.getElementById('institutions-sidebar-list');
+        document.addEventListener('DOMContentLoaded', () => {
+            const userNameSpan = document.getElementById('user-name');
+            const addModal = document.getElementById('add-institution-modal');
+            const deleteModal = document.getElementById('delete-confirm-modal');
+            const institutionsGrid = document.getElementById('institutions-grid');
+            const sidebarList = document.getElementById('institutions-sidebar-list');
 
-        const API_URL = 'http://localhost:3000/instituicoes'; 
-        const userId = localStorage.getItem('user_id');
-        let institutions = [];
+            const API_URL = 'http://localhost:3000/instituicoes'; 
+            const userId = localStorage.getItem('user_id');
+            let institutions = [];
 
-        // --- FUNÇÕES DE NAVEGAÇÃO ---
-        
-        // Verifica login
-        if (!userId) {
-            alert('Usuário não identificado.');
-            // window.location.href = '/login.html'; // Descomente se tiver tela de login
-        }
-
-        function displayUserName() {
-            const userName = localStorage.getItem('user_nome');
-            userNameSpan.textContent = userName || 'Visitante';
-        }
-
-        function goToCourses(id, nome) {
-            // Codifica o nome para não quebrar a URL se tiver acentos ou espaços
-            const encodedName = encodeURIComponent(nome);
-            // Ajuste o caminho '/html/cursos.html' se sua pasta for diferente
-            window.location.href = `/html/cursos.html?inst_id=${id}&inst_name=${encodedName}`;
-        }
-
-        // --- RENDERIZAÇÃO (Visual) ---
-        function renderAll() {
-            institutionsGrid.innerHTML = '';
-            sidebarList.innerHTML = '';
-
-            // Verifica se está vazio para mostrar a mensagem solicitada
-            if (institutions.length === 0) {
-                institutionsGrid.innerHTML = `
-        <div style="grid-column: 1 / -1; text-align: center; padding-top: 50px;">
-            <p>Insira ao menos uma instituição.</p>
-        </div>
-    `;
-                return;
+            if (!userId) {
+                alert('Usuário não identificado.');
+                window.location.href = '/login.html';
             }
 
-            institutions.forEach(inst => {
-                // --- CARD DO GRID ---
-                const card = document.createElement('div');
-                card.className = 'institution-card';
-                card.dataset.id = inst.id;
-                card.style.cursor = 'pointer'; // Indica que é clicável
+            function displayUserName() {
+                const userName = localStorage.getItem('user_nome');
+                userNameSpan.textContent = userName || 'Visitante';
+            }
 
-                card.innerHTML = `
-                    <span class="card-name">${inst.nome}</span>
-                    <div class="card-options">
-                        <button class="options-btn">⋮</button>
-                        <div class="options-menu">
-                            <button class="rename-btn">Renomear</button>
-                            <button class="delete-btn">Excluir</button>
+            function goToCourses(id, nome) {
+                const encodedName = encodeURIComponent(nome);
+                window.location.href = `/html/cursos.html?inst_id=${id}&inst_name=${encodedName}`;
+            }
+
+            function renderAll() {
+                institutionsGrid.innerHTML = '';
+                sidebarList.innerHTML = '';
+
+                if (institutions.length === 0) {
+                    institutionsGrid.innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align: center; padding-top: 50px;">
+                            <p>Insira ao menos uma instituição.</p>
                         </div>
-                    </div>
-                `;
-
-                // Evento de clique no CARD (Navegação)
-                card.addEventListener('click', (e) => {
-                    // Se o clique NÃO foi dentro das opções (botão ou menu), navega
-                    if (!e.target.closest('.card-options')) {
-                        goToCourses(inst.id, inst.nome);
-                    }
-                });
-
-                institutionsGrid.appendChild(card);
-
-                // --- SIDEBAR ITEM ---
-                const listItem = document.createElement('li');
-                listItem.textContent = inst.nome;
-                listItem.dataset.id = inst.id;
-                listItem.style.cursor = 'pointer';
-
-                // Evento de clique na SIDEBAR (Navegação)
-                listItem.addEventListener('click', () => {
-                    goToCourses(inst.id, inst.nome);
-                });
-
-                sidebarList.appendChild(listItem);
-            });
-        }
-
-        // --- CHAMADAS DE API ---
-        async function fetchInstitutions() {
-            try {
-                const res = await fetch(`${API_URL}/user/${userId}`);
-                
-                // Se der 404 (Não encontrado), significa que o user não tem inst. ainda.
-                // Tratamos como lista vazia, não erro.
-                if (res.status === 404) {
-                    institutions = [];
-                    renderAll();
+                    `;
                     return;
                 }
 
-                if (!res.ok) throw new Error('Erro ao carregar instituições');
-                
-                const data = await res.json();
-                institutions = data.instituicoes || [];
-                renderAll();
-            } catch (err) {
-                console.error(err);
-                institutionsGrid.innerHTML = institutionsGrid.innerHTML = `
-        <div style="grid-column: 1 / -1; text-align: center; padding-top: 50px;">
-            <p>Insira ao menos uma instituição.</p>
-        </div>
-    `;
-            }
-        }
+                institutions.forEach(inst => {
+                    const card = document.createElement('div');
+                    card.className = 'institution-card';
+                    card.dataset.id = inst.id;
+                    card.style.cursor = 'pointer';
 
-        async function createInstitution(name) {
-            try {
-                const res = await fetch(`${API_URL}/user/${userId}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nome: name }),
+                    card.innerHTML = `
+                        <span class="card-name">${inst.nome}</span>
+                        <div class="card-options">
+                            <button class="options-btn">⋮</button>
+                            <div class="options-menu">
+                                <button class="rename-btn">Renomear</button>
+                                <button class="delete-btn">Excluir</button>
+                            </div>
+                        </div>
+                    `;
+
+                    institutionsGrid.appendChild(card);
+
+                    const listItem = document.createElement('li');
+                    listItem.textContent = inst.nome;
+                    listItem.dataset.id = inst.id;
+                    listItem.style.cursor = 'pointer';
+
+                    listItem.addEventListener('click', () => {
+                        goToCourses(inst.id, inst.nome);
+                    });
+
+                    sidebarList.appendChild(listItem);
                 });
-                if (!res.ok) throw new Error('Erro ao cadastrar instituição');
-                
-                // Recarrega tudo do banco para garantir consistência
-                await fetchInstitutions();
-            } catch (err) {
-                console.error(err);
-                alert('Erro ao cadastrar instituição.');
-            }
-        }
-
-        async function deleteInstitution(id) {
-            try {
-                const res = await fetch(`${API_URL}/${id}/user/${userId}`, {
-                    method: 'DELETE',
-                });
-                if (!res.ok) throw new Error('Erro ao excluir instituição');
-                
-                institutions = institutions.filter(inst => inst.id !== id);
-                renderAll();
-            } catch (err) {
-                console.error(err);
-                alert('Erro ao excluir instituição.');
-            }
-        }
-
-        // --- MODAIS E EVENTOS GERAIS ---
-        function showModal(modal) {
-            modal.style.display = 'flex';
-        }
-
-        function hideModal(modal) {
-            modal.style.display = 'none';
-        }
-
-        document.getElementById('open-add-modal-btn').addEventListener('click', () => showModal(addModal));
-        document.getElementById('close-add-modal-btn').addEventListener('click', () => hideModal(addModal));
-        document.getElementById('cancel-add-btn').addEventListener('click', () => hideModal(addModal));
-
-        document.getElementById('add-institution-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const input = document.getElementById('institution-name');
-            const name = input.value.trim();
-            if (name) {
-                await createInstitution(name);
-                input.value = '';
-                hideModal(addModal);
-            }
-        });
-
-        // Eventos dentro do Grid (Delegação para botões de opção)
-        institutionsGrid.addEventListener('click', (e) => {
-            // Botão "..."
-            if (e.target.classList.contains('options-btn')) {
-                e.stopPropagation(); // Impede que o clique propague para o card (evita navegar)
-                
-                const menu = e.target.nextElementSibling;
-                // Fecha outros menus abertos
-                document.querySelectorAll('.options-menu').forEach(m => {
-                    if (m !== menu) m.style.display = 'none';
-                });
-                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
             }
 
-            // Botão "Excluir" dentro do menu
-            if (e.target.classList.contains('delete-btn')) {
-                e.stopPropagation(); // Impede navegação
-                
+            async function fetchInstitutions() {
+                try {
+                    const res = await fetch(`${API_URL}/user/${userId}`);
+                    if (res.status === 404) {
+                        institutions = [];
+                        renderAll();
+                        return;
+                    }
+                    if (!res.ok) throw new Error('Erro ao carregar instituições');
+                    const data = await res.json();
+                    institutions = data.instituicoes || [];
+                    renderAll();
+                } catch (err) {
+                    console.error(err);
+                    institutionsGrid.innerHTML = institutionsGrid.innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align: center; padding-top: 50px;">
+                            <p>Insira ao menos uma instituição.</p>
+                        </div>
+                    `;
+                }
+            }
+
+            async function createInstitution(name) {
+                try {
+                    const res = await fetch(`${API_URL}/user/${userId}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ nome: name }),
+                    });
+                    if (!res.ok) throw new Error('Erro ao cadastrar instituição');
+                    await fetchInstitutions();
+                } catch (err) {
+                    console.error(err);
+                    alert('Erro ao cadastrar instituição.');
+                }
+            }
+
+            async function deleteInstitution(id) {
+                try {
+                    const res = await fetch(`${API_URL}/${id}/user/${userId}`, {
+                        method: 'DELETE',
+                    });
+                    if (!res.ok) throw new Error('Erro ao excluir instituição');
+                    institutions = institutions.filter(inst => inst.id !== id);
+                    renderAll();
+                } catch (err) {
+                    console.error(err);
+                    alert('Erro ao excluir instituição.');
+                }
+            }
+
+            function showModal(modal) {
+                modal.style.display = 'flex';
+            }
+            function hideModal(modal) {
+                modal.style.display = 'none';
+            }
+
+            document.getElementById('open-add-modal-btn').addEventListener('click', () => showModal(addModal));
+            document.getElementById('close-add-modal-btn').addEventListener('click', () => hideModal(addModal));
+            document.getElementById('cancel-add-btn').addEventListener('click', () => hideModal(addModal));
+
+            document.getElementById('add-institution-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const input = document.getElementById('institution-name');
+                const name = input.value.trim();
+                if (name) {
+                    await createInstitution(name);
+                    input.value = '';
+                    hideModal(addModal);
+                }
+            });
+
+            institutionsGrid.addEventListener('click', (e) => {
+                if (e.target.classList.contains('options-btn') 
+                    || e.target.classList.contains('rename-btn') 
+                    || e.target.classList.contains('delete-btn')) {
+                    return;
+                }
                 const card = e.target.closest('.institution-card');
-                const id = card.dataset.id;
-                const inst = institutions.find(i => i.id === id);
-                
-                document.getElementById('institution-to-delete-name').textContent = inst.nome;
-                deleteModal.dataset.id = id;
-                
-                // Fecha o menu ao abrir o modal
-                card.querySelector('.options-menu').style.display = 'none';
-                
-                showModal(deleteModal);
-            }
+                if (card) {
+                    const instId = card.dataset.id;
+                    const inst = institutions.find(i => String(i.id) === String(instId));
+                    window.location.href = `/html/cursos.html?inst_id=${instId}&inst_name=${encodeURIComponent(inst.nome)}`;
+                }
+            });
+
+            institutionsGrid.addEventListener('click', (e) => {
+                if (e.target.classList.contains('options-btn')) {
+                    e.stopPropagation();
+                    const menu = e.target.nextElementSibling;
+                    document.querySelectorAll('.options-menu').forEach(m => {
+                        if (m !== menu) m.style.display = 'none';
+                    });
+                    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+                }
+                if (e.target.classList.contains('delete-btn')) {
+                    e.stopPropagation();
+                    const card = e.target.closest('.institution-card');
+                    const id = card.dataset.id;
+                    const inst = institutions.find(i => i.id === id);
+                    document.getElementById('institution-to-delete-name').textContent = inst.nome;
+                    deleteModal.dataset.id = id;
+                    card.querySelector('.options-menu').style.display = 'none';
+                    showModal(deleteModal);
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                const isOptionsClick = e.target.closest('.card-options');
+                if (!isOptionsClick) {
+                    document.querySelectorAll('.options-menu').forEach(m => m.style.display = 'none');
+                }
+            });
+
+            // modal de Exclusão
+            document.getElementById('cancel-delete-btn').addEventListener('click', () => hideModal(deleteModal));
+            document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+                const idToDelete = deleteModal.dataset.id;
+                await deleteInstitution(idToDelete);
+                hideModal(deleteModal);
+            });
+
+            // inicialização
+            displayUserName();
+            fetchInstitutions();
         });
-
-        // Fecha menu de opções ao clicar fora
-        document.addEventListener('click', (e) => {
-            const isOptionsClick = e.target.closest('.card-options');
-            if (!isOptionsClick) {
-                document.querySelectorAll('.options-menu').forEach(m => m.style.display = 'none');
-            }
-        });
-
-        // Modal de Exclusão
-        document.getElementById('cancel-delete-btn').addEventListener('click', () => hideModal(deleteModal));
-        document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
-            const idToDelete = deleteModal.dataset.id;
-            await deleteInstitution(idToDelete);
-            hideModal(deleteModal);
-        });
-
-        // Inicialização
-        displayUserName();
-        fetchInstitutions();
-<<<<<<< HEAD
-
-        // para trocar de tela
-        institutionsGrid.addEventListener('click', (e) => {
-        // evita conflito com botões, só dá certo se clicar fora dos botões de opções
-        if (e.target.classList.contains('options-btn') || e.target.classList.contains('rename-btn') || e.target.classList.contains('delete-btn')) {
-            return;
-        }
-
-        // pega o card
-        const card = e.target.closest('.institution-card');
-        if (card) {
-            const instId = card.dataset.id;
-            const inst = institutions.find(i => String(i.id) === String(instId));
-            window.location.href = `/html/cursos.html?inst_id=${instId}&inst_name=${encodeURIComponent(inst.nome)}`;
-            }
-        });
-
-        });
-=======
-    });
->>>>>>> 2c2d4d80f7a918fe8b0beb61824762ff8c88245d
-    </script>
+</script>
 </body>
 </html>
