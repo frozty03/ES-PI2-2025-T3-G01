@@ -1,0 +1,385 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+}
+
+body {
+    background-color: #f0f2f5;
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+}
+
+.sidebar {
+    width: 280px;
+    background-color: #3338A0;
+    color: #f7f7f7;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 1rem;
+    border-radius: 10px;
+    background-color: #ffffff;
+    color: #3338A0;
+    margin-bottom: 1rem;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.sidebar-header img {
+    width: 40px;
+}
+
+.title-nota
+{
+    color: #FCC61D;
+}
+.title-dez
+{
+    color: #3338A0;
+}
+
+.user-profile {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid #4a4fdc;
+}
+
+.user-profile .user-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+#user-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    display: block;
+    margin-top: 5px;
+}
+
+.sidebar-nav {
+    padding-top: 1.5rem;
+}
+
+.sidebar-nav h3 {
+    margin-bottom: 1rem;
+}
+
+.sidebar-nav > ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.sidebar-nav ul {
+    list-style-type: none;
+    padding-left: 15px; 
+}
+
+.sidebar-nav li {
+    padding: 0.2rem 0;
+    cursor: pointer;
+}
+
+.institution-item > span {
+    font-size: 1.1rem;
+    font-weight: 700;
+    display: block;
+    padding: 0.5rem 0;
+}
+
+.institution-item h4 {
+    font-size: 0.9rem;
+    color: #FCC61D; 
+    margin-top: 10px;
+    font-weight: 500;
+}
+
+.main-content {
+    flex: 1;
+    padding: 2rem;
+}
+
+.content-card {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    min-height: 100%;
+}
+
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.content-header h1 {
+    color: #333;
+}
+
+.btn-cadastrar {
+    background-color: #FCC61D;
+    color: #3338A0;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.btn-cadastrar:hover {
+    background-color: #eab518;
+}
+
+.class-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.class-card {
+    background-color: #3338A0;
+    color: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.card-name {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.options-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.options-menu {
+    display: none;
+    position: absolute;
+    top: 50px;
+    right: 10px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    z-index: 10;
+    overflow: hidden;
+}
+
+.options-menu button {
+    display: block;
+    width: 100%;
+    padding: 0.8rem 1.2rem;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    color: #333;
+}
+
+.options-menu button:hover {
+    background-color: #f0f2f5;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    padding: 2rem;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+}
+
+.close-btn {
+    color: #aaa;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal-content h2 {
+    margin-bottom: 1.5rem;
+}
+
+.input-box {
+    margin-bottom: 1rem;
+}
+.input-box label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #333;
+}
+.input-box input {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.8rem 1.2rem;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.modal-actions button {
+    padding: 0.6rem 1.2rem;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-cancel {
+    background-color: #ccc;
+    color: #333;
+}
+.btn-confirm, .btn-confirm-delete {
+    background-color: #3338A0;
+    color: white;
+}
+.btn-confirm-delete {
+    background-color: #d9534f;
+}
+
+#institutions-list {
+  margin-top: 0.5rem;
+  padding-left: 0;
+  list-style: none;
+}
+.institution-item {
+  padding: 0.5rem 0.7rem;
+  margin-bottom: 0.2rem;
+  border-radius: 6px;
+  color: #fff;
+  font-weight: 600;
+  background: none;
+  transition: background 0.2s;
+}
+.institution-item:hover {
+  background: #464bca;
+}
+
+.turmas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 1.2rem;
+}
+.turma-card {
+  background: #3338A0;
+  color: #fff;
+  border-radius: 10px;
+  padding: 2rem 1.5rem 1.3rem 1.2rem;
+  box-shadow: 0 2px 6px 0 rgba(60,67,140,0.13);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  font-size: 1.25rem;
+  font-weight: bold;
+  min-height: 110px;
+  cursor: pointer;
+  transition: box-shadow 0.18s;
+}
+.turma-card .card-name {
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.turma-card .card-options {
+  position: absolute;
+  top: 18px;
+  right: 12px;
+}
+.options-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+.options-menu {
+  display: none;
+  position: absolute;
+  top: 32px;
+  right: 0;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 1px 5px rgba(0,0,0,.09);
+  z-index: 10;
+}
+.options-menu button {
+  display: block;
+  width: 100%;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  color: #333;
+}
+.options-menu button:hover {
+  background-color: #f0f2f5;
+}
+
+#institutions-list {
+  margin-top: 0.3rem;
+  padding-left: 0;
+  list-style: none;
+}
+.institution-item {
+  padding: 0.55rem 0.9rem;
+  margin-bottom: 0.18rem;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+.institution-item:hover {
+  background: #464bca;
+}
