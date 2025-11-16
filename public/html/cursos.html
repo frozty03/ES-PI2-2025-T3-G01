@@ -261,6 +261,27 @@
             await fetchInstitutionsAndRenderSidebar(instId);
             await fetchCoursesAndRenderGrid();
         })();
+
+
+        // ir para o curso
+        coursesGrid.addEventListener('click', (e) => {
+            if (
+                e.target.classList.contains('options-btn') ||
+                e.target.classList.contains('rename-btn') ||
+                e.target.classList.contains('delete-btn')
+            ) {
+                return;
+            }
+
+            // procura o card de curso clicado
+            const card = e.target.closest('.course-card');
+            if (card) {
+                const courseId = card.dataset.id;
+                const course = courses.find(c => String(c.id) === String(courseId));
+
+                window.location.href = `/html/disciplinas.html?curso_id=${courseId}&curso_nome=${encodeURIComponent(course.nome)}`;
+            }
+        });
     });
     </script>
 </body>
