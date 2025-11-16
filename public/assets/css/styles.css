@@ -19,7 +19,6 @@ body {
     width: 100%;
 }
 
-/* --- Barra Lateral --- */
 .sidebar {
     width: 280px;
     background-color: #3338A0;
@@ -35,7 +34,7 @@ body {
     gap: 10px;
     padding: 1rem;
     border-radius: 10px;
-    background-color: #ffffff; /* fundo claro */
+    background-color: #ffffff;
     color: #3338A0;
     margin-bottom: 1rem;
     justify-content: center;

@@ -1,5 +1,6 @@
 import { CursoEntity } from "src/cursos/curso.entity";
 import { TurmaEntity } from "src/turmas/turma.entity";
+import { ComponenteNotaEntity } from "src/disciplinas/componente-nota.entity";
 export declare class DisciplinasEntity {
     id: string;
     cod: number;
@@ -8,4 +9,5 @@ export declare class DisciplinasEntity {
     periodo: string;
     cursos: CursoEntity[];
     turmas: TurmaEntity[];
+    componentesNota: ComponenteNotaEntity[];
 }

@@ -13,6 +13,7 @@ exports.DisciplinasEntity = void 0;
 const curso_entity_1 = require("../cursos/curso.entity");
 const typeorm_1 = require("typeorm");
 const turma_entity_1 = require("../turmas/turma.entity");
+const componente_nota_entity_1 = require("./componente-nota.entity");
 let DisciplinasEntity = class DisciplinasEntity {
     id;
     cod;
@@ -21,6 +22,7 @@ let DisciplinasEntity = class DisciplinasEntity {
     periodo;
     cursos;
     turmas;
+    componentesNota;
 };
 exports.DisciplinasEntity = DisciplinasEntity;
 __decorate([
@@ -56,6 +58,10 @@ __decorate([
     (0, typeorm_1.ManyToMany)(() => turma_entity_1.TurmaEntity, (turma) => turma.disciplinas),
     __metadata("design:type", Array)
 ], DisciplinasEntity.prototype, "turmas", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => componente_nota_entity_1.ComponenteNotaEntity, (componente) => componente.disciplina),
+    __metadata("design:type", Array)
+], DisciplinasEntity.prototype, "componentesNota", void 0);
 exports.DisciplinasEntity = DisciplinasEntity = __decorate([
     (0, typeorm_1.Entity)({ name: 'Disciplinas ' })
 ], DisciplinasEntity);

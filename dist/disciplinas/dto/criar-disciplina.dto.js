@@ -17,6 +17,7 @@ class CriarDisciplinaDTO {
     sigla;
     periodo;
     cursosIds;
+    componentesNota;
 }
 exports.CriarDisciplinaDTO = CriarDisciplinaDTO;
 __decorate([
@@ -48,4 +49,8 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)({ message: 'Pelo menos um curso deve ser informado' }),
     __metadata("design:type", Array)
 ], CriarDisciplinaDTO.prototype, "cursosIds", void 0);
+__decorate([
+    (0, class_validator_1.IsArray)(),
+    __metadata("design:type", Array)
+], CriarDisciplinaDTO.prototype, "componentesNota", void 0);
 //# sourceMappingURL=criar-disciplina.dto.js.map
