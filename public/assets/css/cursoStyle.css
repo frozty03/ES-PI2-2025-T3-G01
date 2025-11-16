@@ -32,12 +32,26 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid #4a4fdc;
+    padding: 1rem;
+    border-radius: 10px;
+    background-color: #ffffff;
+    color: #3338A0;
+    margin-bottom: 1rem;
+    justify-content: center;
+    margin-top: 10px;
 }
 
 .sidebar-header img {
     width: 40px;
+}
+
+.title-nota
+{
+    color: #FCC61D;
+}
+.title-dez
+{
+    color: #3338A0;
 }
 
 .user-profile {

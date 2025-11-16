@@ -38,6 +38,18 @@ let ComponenteNotaService = class ComponenteNotaService {
         });
         return await this.componenteNotaRepository.save(componente);
     }
+    async atualizar(id, dto) {
+        const componente = await this.componenteNotaRepository.findOne({ where: { id } });
+        if (!componente)
+            throw new common_1.NotFoundException("Componente de nota não encontrado");
+        Object.assign(componente, dto);
+        return await this.componenteNotaRepository.save(componente);
+    }
+    async deletar(id) {
+        const result = await this.componenteNotaRepository.delete(id);
+        if (result.affected === 0)
+            throw new common_1.NotFoundException("Componente de nota não encontrado");
+    }
 };
 exports.ComponenteNotaService = ComponenteNotaService;
 exports.ComponenteNotaService = ComponenteNotaService = __decorate([

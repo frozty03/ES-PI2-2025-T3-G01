@@ -222,6 +222,23 @@
         // inicialização
         displayUserName();
         fetchInstitutions();
+
+        // para trocar de tela
+        institutionsGrid.addEventListener('click', (e) => {
+        // evita conflito com botões, só dá certo se clicar fora dos botões de opções
+        if (e.target.classList.contains('options-btn') || e.target.classList.contains('rename-btn') || e.target.classList.contains('delete-btn')) {
+            return;
+        }
+
+        // pega o card
+        const card = e.target.closest('.institution-card');
+        if (card) {
+            const instId = card.dataset.id;
+            const inst = institutions.find(i => String(i.id) === String(instId));
+            window.location.href = `/html/cursos.html?inst_id=${instId}&inst_name=${encodeURIComponent(inst.nome)}`;
+            }
+        });
+
         });
     </script>
 </body>
