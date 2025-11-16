@@ -105,12 +105,13 @@
 
                 showMessage('Login realizado com sucesso! Redirecionando...', 'success');
                 
-
-                //  guardar o token no navegador
+                //  guardar o token no navegador, id e nome do usuario
                 localStorage.setItem('access_token', resultado.access_token);
+                localStorage.setItem('user_id', resultado.id);
+                localStorage.setItem('user_nome', resultado.nome);
 
                 setTimeout(() => {
-                    window.location.href = '/html/mainscreen.html'; 
+                    window.location.href = '/html/instituicoes.html'; 
                 }, 1500);
 
             } catch (error) {

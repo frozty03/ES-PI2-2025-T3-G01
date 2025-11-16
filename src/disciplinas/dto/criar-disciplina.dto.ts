@@ -1,5 +1,5 @@
 import { IsArray, IsNotEmpty, IsNumber, IsString, IsUUID, Length } from "class-validator";
-
+import { CriarComponenteNotaDTO } from "./criar-componente-nota.dto"
 
 export class CriarDisciplinaDTO {
     @IsNumber({}, { message: 'Código deve ser um número' })
@@ -25,4 +25,7 @@ export class CriarDisciplinaDTO {
     @IsUUID('4', { each: true, message: 'Cada curso deve ter um ID UUID válido' }) // mesma coisa '-'
     @IsNotEmpty({ message: 'Pelo menos um curso deve ser informado' })
     cursosIds: string[];
+
+    @IsArray()
+    componentesNota: CriarComponenteNotaDTO[];
 }   

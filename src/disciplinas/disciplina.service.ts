@@ -5,7 +5,7 @@ import { In, Repository } from "typeorm";
 import { CursoEntity } from "src/cursos/curso.entity";
 import { CriarDisciplinaDTO } from "./dto/criar-disciplina.dto";
 import { AtualizarDisciplinaDTO } from "./dto/atualizar-discplina.dto";
-
+import { ComponenteNotaService } from "./componente-nota.service"
 
 @Injectable()
 export class DisciplinaService {
@@ -15,6 +15,7 @@ export class DisciplinaService {
 
         @InjectRepository(CursoEntity)
         private readonly cursoRepository: Repository<CursoEntity>,
+    private readonly componenteNotaService: ComponenteNotaService,
     ) {}
 
     async criarDisciplina(criarDisciplinaDTO: CriarDisciplinaDTO, userId: string): Promise<DisciplinasEntity> {// "prometendo" a entrega assincrona de um valor resultante DisciplinasEntity
@@ -39,7 +40,7 @@ export class DisciplinaService {
             throw new NotFoundException('Um ou mais cursos informados nao foram encontradsos');
         }
 
-        const disciplina = this.disciplinaRepository.create({
+        let disciplina = this.disciplinaRepository.create({
             cod: criarDisciplinaDTO.cod,
             nome: criarDisciplinaDTO.nome,
             sigla: criarDisciplinaDTO.sigla,
@@ -47,7 +48,18 @@ export class DisciplinaService {
             cursos: cursos
         });
 
-        return await this.disciplinaRepository.save(disciplina); 
+        disciplina = await this.disciplinaRepository.save(disciplina); 
+
+        if (criarDisciplinaDTO.componentesNota?.length) {
+            for (const comp of criarDisciplinaDTO.componentesNota) {
+                await this.componenteNotaService.criar({
+                ...comp,
+                id_disciplina: disciplina.id
+                });
+            }
+        }
+
+        return disciplina;
     }
 
     // validar se pertence ao curso que pertence ao userId '-'
@@ -71,7 +83,7 @@ export class DisciplinaService {
         .leftJoinAndSelect('disciplina.cursos', 'cursos')
         .where('curso.id = :cursoId', { cursoId })
         .getMany();
-}
+    }
 
     async buscarDisciplinaId(id: string, userId: string): Promise<DisciplinasEntity> {
         const disciplina = await this.disciplinaRepository
@@ -138,8 +150,8 @@ export class DisciplinaService {
     async deletar(id: string, userId: string): Promise<{ message: string }> {
         const disciplina = await this.buscarDisciplinaId(id, userId);
 
+        await this.componenteNotaService.deletarPorDisciplinaId(disciplina.id); // precisa deleter os componenentes antes pq o banco de dados n tá com delete on cascade (até melhor pra ter um conrole melhor do que tá acontecendo)
         await this.disciplinaRepository.remove(disciplina);
-
         return { message: 'Disciplina excluida com sucesso' };
     }
 }
