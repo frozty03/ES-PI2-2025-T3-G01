@@ -57,7 +57,7 @@
     <div id="delete-confirm-modal" class="modal">
         <div class="modal-content">
             <h2>Confirmar Exclusão</h2>
-            <p>Você tem certeza que deseja excluir a instituição "<span id="institution-to-delete-name"></span>"?</p>
+            <p>Você tem certeza que deseja excluir a instituição?"<span id="institution-to-delete-name"></span>"?</p>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" id="cancel-delete-btn">Cancelar</button>
                 <button type="button" class="btn-confirm-delete" id="confirm-delete-btn">Excluir</button>
@@ -67,32 +67,59 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // variáveis de teste
+        // --- VARIÁVEIS E ELEMENTOS ---
         const userNameSpan = document.getElementById('user-name');
         const addModal = document.getElementById('add-institution-modal');
         const deleteModal = document.getElementById('delete-confirm-modal');
         const institutionsGrid = document.getElementById('institutions-grid');
         const sidebarList = document.getElementById('institutions-sidebar-list');
 
-        const API_URL = 'http://localhost:3000/instituicoes'; // ajuste a porta se necessário
+        const API_URL = 'http://localhost:3000/instituicoes'; 
         const userId = localStorage.getItem('user_id');
         let institutions = [];
 
-        // personaliza o nome do usuário
+        // --- FUNÇÕES DE NAVEGAÇÃO ---
+        
+        // Verifica login
+        if (!userId) {
+            alert('Usuário não identificado.');
+            // window.location.href = '/login.html'; // Descomente se tiver tela de login
+        }
+
         function displayUserName() {
             const userName = localStorage.getItem('user_nome');
             userNameSpan.textContent = userName || 'Visitante';
         }
 
+        function goToCourses(id, nome) {
+            // Codifica o nome para não quebrar a URL se tiver acentos ou espaços
+            const encodedName = encodeURIComponent(nome);
+            // Ajuste o caminho '/html/cursos.html' se sua pasta for diferente
+            window.location.href = `/html/cursos.html?inst_id=${id}&inst_name=${encodedName}`;
+        }
+
+        // --- RENDERIZAÇÃO (Visual) ---
         function renderAll() {
             institutionsGrid.innerHTML = '';
             sidebarList.innerHTML = '';
 
+            // Verifica se está vazio para mostrar a mensagem solicitada
+            if (institutions.length === 0) {
+                institutionsGrid.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding-top: 50px;">
+            <p>Insira ao menos uma instituição.</p>
+        </div>
+    `;
+                return;
+            }
+
             institutions.forEach(inst => {
-                // card principal
+                // --- CARD DO GRID ---
                 const card = document.createElement('div');
                 card.className = 'institution-card';
                 card.dataset.id = inst.id;
+                card.style.cursor = 'pointer'; // Indica que é clicável
+
                 card.innerHTML = `
                     <span class="card-name">${inst.nome}</span>
                     <div class="card-options">
@@ -103,27 +130,57 @@
                         </div>
                     </div>
                 `;
+
+                // Evento de clique no CARD (Navegação)
+                card.addEventListener('click', (e) => {
+                    // Se o clique NÃO foi dentro das opções (botão ou menu), navega
+                    if (!e.target.closest('.card-options')) {
+                        goToCourses(inst.id, inst.nome);
+                    }
+                });
+
                 institutionsGrid.appendChild(card);
 
-                // sidebar
+                // --- SIDEBAR ITEM ---
                 const listItem = document.createElement('li');
                 listItem.textContent = inst.nome;
                 listItem.dataset.id = inst.id;
+                listItem.style.cursor = 'pointer';
+
+                // Evento de clique na SIDEBAR (Navegação)
+                listItem.addEventListener('click', () => {
+                    goToCourses(inst.id, inst.nome);
+                });
+
                 sidebarList.appendChild(listItem);
             });
         }
 
-        // chamada de rotas
+        // --- CHAMADAS DE API ---
         async function fetchInstitutions() {
             try {
                 const res = await fetch(`${API_URL}/user/${userId}`);
+                
+                // Se der 404 (Não encontrado), significa que o user não tem inst. ainda.
+                // Tratamos como lista vazia, não erro.
+                if (res.status === 404) {
+                    institutions = [];
+                    renderAll();
+                    return;
+                }
+
                 if (!res.ok) throw new Error('Erro ao carregar instituições');
+                
                 const data = await res.json();
                 institutions = data.instituicoes || [];
                 renderAll();
             } catch (err) {
                 console.error(err);
-                institutionsGrid.innerHTML = '<p>Erro ao carregar instituições.</p>';
+                institutionsGrid.innerHTML = institutionsGrid.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding-top: 50px;">
+            <p>Insira ao menos uma instituição.</p>
+        </div>
+    `;
             }
         }
 
@@ -135,9 +192,9 @@
                     body: JSON.stringify({ nome: name }),
                 });
                 if (!res.ok) throw new Error('Erro ao cadastrar instituição');
-                const newInst = await res.json();
-                institutions.push(newInst);
-                renderAll();
+                
+                // Recarrega tudo do banco para garantir consistência
+                await fetchInstitutions();
             } catch (err) {
                 console.error(err);
                 alert('Erro ao cadastrar instituição.');
@@ -150,6 +207,7 @@
                     method: 'DELETE',
                 });
                 if (!res.ok) throw new Error('Erro ao excluir instituição');
+                
                 institutions = institutions.filter(inst => inst.id !== id);
                 renderAll();
             } catch (err) {
@@ -158,7 +216,7 @@
             }
         }
 
-        // modais
+        // --- MODAIS E EVENTOS GERAIS ---
         function showModal(modal) {
             modal.style.display = 'flex';
         }
@@ -167,7 +225,6 @@
             modal.style.display = 'none';
         }
 
-        // eventos
         document.getElementById('open-add-modal-btn').addEventListener('click', () => showModal(addModal));
         document.getElementById('close-add-modal-btn').addEventListener('click', () => hideModal(addModal));
         document.getElementById('cancel-add-btn').addEventListener('click', () => hideModal(addModal));
@@ -183,28 +240,39 @@
             }
         });
 
+        // Eventos dentro do Grid (Delegação para botões de opção)
         institutionsGrid.addEventListener('click', (e) => {
-            // abrir menu de opções
+            // Botão "..."
             if (e.target.classList.contains('options-btn')) {
+                e.stopPropagation(); // Impede que o clique propague para o card (evita navegar)
+                
                 const menu = e.target.nextElementSibling;
+                // Fecha outros menus abertos
                 document.querySelectorAll('.options-menu').forEach(m => {
                     if (m !== menu) m.style.display = 'none';
                 });
                 menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
             }
 
-            // abrir modal de exclusão
+            // Botão "Excluir" dentro do menu
             if (e.target.classList.contains('delete-btn')) {
+                e.stopPropagation(); // Impede navegação
+                
                 const card = e.target.closest('.institution-card');
                 const id = card.dataset.id;
                 const inst = institutions.find(i => i.id === id);
+                
                 document.getElementById('institution-to-delete-name').textContent = inst.nome;
                 deleteModal.dataset.id = id;
+                
+                // Fecha o menu ao abrir o modal
+                card.querySelector('.options-menu').style.display = 'none';
+                
                 showModal(deleteModal);
             }
         });
 
-        // para fechar as opções dos modais (caso estejam abertas) quando clicar em outra lugar que não seja uma opção
+        // Fecha menu de opções ao clicar fora
         document.addEventListener('click', (e) => {
             const isOptionsClick = e.target.closest('.card-options');
             if (!isOptionsClick) {
@@ -212,6 +280,7 @@
             }
         });
 
+        // Modal de Exclusão
         document.getElementById('cancel-delete-btn').addEventListener('click', () => hideModal(deleteModal));
         document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
             const idToDelete = deleteModal.dataset.id;
@@ -219,9 +288,10 @@
             hideModal(deleteModal);
         });
 
-        // inicialização
+        // Inicialização
         displayUserName();
         fetchInstitutions();
+<<<<<<< HEAD
 
         // para trocar de tela
         institutionsGrid.addEventListener('click', (e) => {
@@ -240,6 +310,9 @@
         });
 
         });
+=======
+    });
+>>>>>>> 2c2d4d80f7a918fe8b0beb61824762ff8c88245d
     </script>
 </body>
 </html>

@@ -81,7 +81,7 @@ export class TurmaService {
   async buscarTurmaPeloId(id: string, userId: string): Promise<TurmaEntity> {
     const turma = await this.turmaRepository
         .createQueryBuilder('turma')
-        .innerJoin('turmas.disciplinas', 'disciplina')
+        .innerJoin('turma.disciplinas', 'disciplina')
         .innerJoin('disciplina.cursos', 'curso')
         .innerJoin('curso.instituicoes', 'instituicao')
         .innerJoin('instituicao.users', 'user')

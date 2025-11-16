@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD
     <link rel="stylesheet" href="/assets/css/cursoStyle.css">
+=======
+    <link rel="stylesheet" href="/assets/css/cursoStyle.css"> 
+>>>>>>> 2c2d4d80f7a918fe8b0beb61824762ff8c88245d
     <link rel="icon" type="img/png" href="/assets/img/LogoNotaDez.svg">
     <title>Cursos - NotaDez</title>
 </head>
@@ -64,6 +68,7 @@
     </div>
 
     <script>
+<<<<<<< HEAD
     document.addEventListener('DOMContentLoaded', () => {
         const API_BASE = 'http://localhost:3000';
 
@@ -116,12 +121,94 @@
                 li.textContent = inst.nome;
                 if (String(inst.id) === String(selectedInstitutionId)) {
                     li.classList.add('institution-item');
+=======
+        document.addEventListener('DOMContentLoaded', async () => {
+        // --- ELEMENTOS DO DOM ---
+        const userNameSpan = document.getElementById('user-name');
+        const mainTitle = document.getElementById('main-title');
+        const addModal = document.getElementById('add-course-modal');
+        const deleteModal = document.getElementById('delete-confirm-modal');
+        const coursesGrid = document.getElementById('courses-grid');
+        const sidebarNav = document.getElementById('sidebar-nav'); // Onde a lista da sidebar entra
+
+        // --- CONFIGURAÇÕES ---
+        const API_URL = 'http://localhost:3000'; 
+        const userId = localStorage.getItem('user_id'); // Pega o ID salvo no login
+        const userName = localStorage.getItem('user_nome');
+        
+        // Pega o ID e Nome da instituição da URL (ex: cursos.html?inst_id=123&inst_name=PUC)
+        const params = new URLSearchParams(window.location.search);
+        const currentInstId = params.get('inst_id'); 
+        const currentInstName = params.get('inst_name') || 'Instituição';
+
+        let coursesList = []; // Array local para armazenar os cursos carregados
+
+        // --- INICIALIZAÇÃO BÁSICA ---
+        function init() {
+            if (!userId) {
+                alert('Usuário não logado!');
+                window.location.href = '/index.html'; // Redireciona se não tiver user
+                return;
+            }
+            
+            if (!currentInstId) {
+                alert('Nenhuma instituição selecionada.');
+                window.location.href = '/html/instituicoes.html'; // Volta pra lista
+                return;
+            }
+
+            userNameSpan.textContent = userName || 'Usuário';
+            mainTitle.textContent = `Cursos de ${currentInstName}`;
+
+            // Carrega os dados
+            fetchSidebarInstitutions();
+            fetchCourses();
+        }
+
+        // --- 1. CARREGAR SIDEBAR (LISTA DE INSTITUIÇÕES) ---
+        // Precisamos buscar as instituições para montar o menu lateral
+        async function fetchSidebarInstitutions() {
+            try {
+                const res = await fetch(`${API_URL}/instituicoes/user/${userId}`);
+                if (!res.ok) throw new Error('Erro ao carregar sidebar');
+                
+                const data = await res.json();
+                const institutions = data.instituicoes || [];
+                renderSidebar(institutions);
+            } catch (error) {
+                console.error(error);
+                sidebarNav.innerHTML = '<p style="color:white; padding:10px;">Erro ao carregar menu.</p>';
+            }
+        }
+
+        function renderSidebar(institutions) {
+            sidebarNav.innerHTML = '<h3>Instituições:</h3>';
+            const ul = document.createElement('ul');
+            
+            institutions.forEach(inst => {
+                const li = document.createElement('li');
+                li.dataset.id = inst.id;
+                
+                // Se for a instituição atual da página, destaca ela
+                if (inst.id === currentInstId) {
+                    li.classList.add('institution-item');
+                    li.innerHTML = `
+                        <span style="color: #FCC61D;">${inst.nome}</span>
+                        `;
+                } else {
+                    li.innerHTML = `<span>${inst.nome}</span>`;
+                    // Clique para navegar para outra instituição
+                    li.addEventListener('click', () => {
+                        window.location.href = `/html/cursos.html?inst_id=${inst.id}&inst_name=${inst.nome}`;
+                    });
+>>>>>>> 2c2d4d80f7a918fe8b0beb61824762ff8c88245d
                 }
                 ul.appendChild(li);
             });
             sidebarNav.appendChild(ul);
         }
 
+<<<<<<< HEAD
         // carrega cruso
         async function fetchCoursesAndRenderGrid() {
             const instId = getInstitutionIdFromURL();
@@ -132,10 +219,35 @@
                 renderCourseGrid();
             } catch(err) {
                 coursesGrid.innerHTML = '<p>Erro ao carregar cursos.</p>';
+=======
+        // --- 2. CARREGAR CURSOS (GRID PRINCIPAL) ---
+        async function fetchCourses() {
+            try {
+                // Rota: GET /cursos/instituicao/:idInst/user/:idUser
+                const res = await fetch(`${API_URL}/cursos/instituicao/${currentInstId}/user/${userId}`);
+                
+                if (!res.ok) {
+                     // Se der 404 pode ser que não tenha cursos ainda, então tratamos como vazio
+                     if(res.status === 404) {
+                        coursesList = [];
+                        renderCourseGrid();
+                        return;
+                     }
+                     throw new Error('Erro ao buscar cursos');
+                }
+
+                coursesList = await res.json(); // O backend retorna ListarCursoDto[]
+                renderCourseGrid();
+
+            } catch (error) {
+                console.error(error);
+                coursesGrid.innerHTML = '<p>Não foi possível carregar os cursos.</p>';
+>>>>>>> 2c2d4d80f7a918fe8b0beb61824762ff8c88245d
             }
         }
 
         function renderCourseGrid() {
+<<<<<<< HEAD
             coursesGrid.innerHTML = '';
             if (!courses.length) {
                 coursesGrid.innerHTML = '<p>Nenhum curso cadastrado para esta instituição.</p>';
@@ -145,6 +257,22 @@
                 const card = document.createElement('div');
                 card.className = 'course-card';
                 card.dataset.id = course.id;
+=======
+            coursesGrid.innerHTML = ''; 
+
+            if (coursesList.length === 0) {
+                coursesGrid.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding-top: 50px;">
+                <p>Nenhum curso cadastrado nesta instituição.</p>
+                </div>`;
+                return;
+            }
+
+            coursesList.forEach(course => {
+                const card = document.createElement('div');
+                card.className = 'course-card';
+                card.dataset.id = course.id; // ID do UUID
+>>>>>>> 2c2d4d80f7a918fe8b0beb61824762ff8c88245d
                 card.innerHTML = `
                     <span class="card-name">${course.nome}</span>
                     <div class="card-options">
@@ -159,6 +287,7 @@
             });
         }
 
+<<<<<<< HEAD
         function displayMainTitle() {
             mainTitle.textContent = currentInstitution
                 ? `Cursos de ${currentInstitution.nome}`
@@ -203,6 +332,59 @@
             modal.style.display = 'none';
         }
 
+=======
+        // --- 3. CRIAR CURSO (POST) ---
+        async function createCourse(name) {
+            try {
+                const payload = {
+                    nome: name,
+                    instituicoesIds: [currentInstId] // O DTO pede um array de IDs
+                };
+
+                const res = await fetch(`${API_URL}/cursos/user/${userId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) throw new Error('Erro ao criar curso');
+
+                // Recarrega a lista
+                await fetchCourses(); 
+
+            } catch (error) {
+                console.error(error);
+                alert('Erro ao salvar o curso. Verifique o console.');
+            }
+        }
+
+        // --- 4. DELETAR CURSO (DELETE) ---
+        async function deleteCourse(courseId) {
+            try {
+                // ATENÇÃO: Certifique-se que no Controller a rota é @Delete(':id/user/:userId')
+                const res = await fetch(`${API_URL}/cursos/${courseId}/user/${userId}`, {
+                    method: 'DELETE'
+                });
+
+                if (!res.ok) throw new Error('Erro ao excluir');
+
+                // Remove da lista local e re-renderiza para evitar nova chamada de rede (opcional)
+                coursesList = coursesList.filter(c => c.id !== courseId);
+                renderCourseGrid();
+
+            } catch (error) {
+                console.error(error);
+                alert('Erro ao excluir curso.');
+            }
+        }
+
+        // --- GESTÃO DE MODAIS E EVENTOS (Igual ao original, mas chamando as funções async) ---
+
+        function showModal(modal) { modal.style.display = 'flex'; }
+        function hideModal(modal) { modal.style.display = 'none'; }
+
+        // Modal Adicionar
+>>>>>>> 2c2d4d80f7a918fe8b0beb61824762ff8c88245d
         document.getElementById('open-add-modal-btn').addEventListener('click', () => showModal(addModal));
         document.getElementById('close-add-modal-btn').addEventListener('click', () => hideModal(addModal));
         document.getElementById('cancel-add-btn').addEventListener('click', () => hideModal(addModal));
@@ -211,11 +393,16 @@
             e.preventDefault();
             const input = document.getElementById('course-name');
             if (input.value.trim()) {
+<<<<<<< HEAD
                 await addCourse(input.value.trim());
+=======
+                await createCourse(input.value.trim());
+>>>>>>> 2c2d4d80f7a918fe8b0beb61824762ff8c88245d
                 input.value = '';
                 hideModal(addModal);
             }
         });
+<<<<<<< HEAD
 
         // troca de instituição pela sidebar
         sidebarNav.addEventListener('click', (e) => {
@@ -224,10 +411,36 @@
                 const id = li.dataset.id;
                 if (id !== String(currentInstitution.id)) {
                     window.location.href = `/html/cursos.html?inst_id=${id}`;
+=======
+        
+        // Lógica de clique nos Cards (Opções e Delete)
+        coursesGrid.addEventListener('click', (e) => {
+            // Abrir menu
+            if (e.target.classList.contains('options-btn')) {
+                const menu = e.target.nextElementSibling;
+                // Fecha outros menus abertos
+                document.querySelectorAll('.options-menu').forEach(m => {
+                    if(m !== menu) m.style.display = 'none';
+                });
+                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+            }
+
+            // Clicar em Excluir
+            if (e.target.classList.contains('delete-btn')) {
+                const card = e.target.closest('.course-card');
+                const id = card.dataset.id; 
+                const course = coursesList.find(c => c.id === id);
+
+                if(course) {
+                    document.getElementById('course-to-delete-name').textContent = course.nome;
+                    deleteModal.dataset.id = id; 
+                    showModal(deleteModal);
+>>>>>>> 2c2d4d80f7a918fe8b0beb61824762ff8c88245d
                 }
             }
         });
 
+<<<<<<< HEAD
         coursesGrid.addEventListener('click', (e) => {
             if (e.target.classList.contains('options-btn')) {
                 const menu = e.target.nextElementSibling;
@@ -282,6 +495,28 @@
                 window.location.href = `/html/disciplinas.html?curso_id=${courseId}&curso_nome=${encodeURIComponent(course.nome)}`;
             }
         });
+=======
+        // Fechar menu se clicar fora
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.card-options')) {
+                document.querySelectorAll('.options-menu').forEach(m => m.style.display = 'none');
+            }
+        });
+
+        // Modal Deletar
+        document.getElementById('cancel-delete-btn').addEventListener('click', () => hideModal(deleteModal));
+        
+        document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+            const idToDelete = deleteModal.dataset.id;
+            if(idToDelete) {
+                await deleteCourse(idToDelete);
+            }
+            hideModal(deleteModal);
+        });
+
+        // Roda a inicialização
+        init();
+>>>>>>> 2c2d4d80f7a918fe8b0beb61824762ff8c88245d
     });
     </script>
 </body>
