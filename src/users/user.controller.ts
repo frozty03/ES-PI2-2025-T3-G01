@@ -1,3 +1,6 @@
+// Feito por: Davi Froza
+
+
 import { Post, Param, Query, Put, Res, Get, Controller, Body, HttpCode, HttpStatus, HttpException } from "@nestjs/common";
 import { v4 as uuid } from 'uuid';
 import { CriarUserDTO } from "./criarUser.dto";

@@ -1,3 +1,5 @@
+// Feito por: Davi Froza 
+
 import { TurmaEntity } from "src/turmas/turma.entity";
 import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
 

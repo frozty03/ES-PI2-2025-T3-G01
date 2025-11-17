@@ -1,3 +1,6 @@
+// Feito por: Davi Froza
+
+
 import { ConflictException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm"; // repository pattern
 import { CriarUserDTO } from "./criarUser.dto";

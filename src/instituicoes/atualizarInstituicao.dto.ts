@@ -1,3 +1,6 @@
+// Feito por:  Davi Froza
+
+
 import { IsOptional, IsString, Length } from "class-validator";
 
 

@@ -1,3 +1,5 @@
+// Feito por: Davi Froza 
+
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { TurmaEntity } from "src/turmas/turma.entity";

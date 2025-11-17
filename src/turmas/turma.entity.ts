@@ -7,7 +7,7 @@ export class TurmaEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column({ name: 'cod', type: "integer",unique: true, nullable: false}) // campo código
+    @Column({ name: 'cod', type: "integer", nullable: false}) // campo código
     cod: number;
 
     @ManyToMany(() => DisciplinasEntity, (disciplina) => disciplina.turmas)

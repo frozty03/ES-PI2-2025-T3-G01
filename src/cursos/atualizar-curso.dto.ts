@@ -1,5 +1,6 @@
-import { IsOptional, IsString, Length } from "class-validator";
+// Feito por: Davi Froza 
 
+import { IsOptional, IsString, Length } from "class-validator";
 
 export class AtualizarCursoDto {
     @IsOptional()
