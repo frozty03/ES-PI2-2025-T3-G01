@@ -1,8 +1,17 @@
+// Lucas Presendo Canhete
 import { Body, Controller, Get, Param, Post, Delete } from '@nestjs/common';
 import { InstituicaoService } from './instituicao.service';
 import { CreateInstituicaoDto } from './criarInstituicao.dto';
 import { ListInstituicoesByUserDto } from './list-instituicoes-by-user.dto';
 
+/*
+  Controller para operações sobre Instituições.
+
+  Endpoints:
+  - `POST /instituicoes/user/:userId`: cria instituição vinculada ao usuário.
+  - `DELETE /instituicoes/:id/user/:userId`: deleta instituição (verifica associação).
+  - `GET /instituicoes/user/:userId`: lista instituições associadas ao usuário.
+*/
 @Controller('instituicoes')
 export class InstituicaoController {
   constructor(private readonly instituicaoService: InstituicaoService) {}

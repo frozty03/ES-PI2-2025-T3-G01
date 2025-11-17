@@ -1,3 +1,4 @@
+// Lucas Presendo Canhete
 // Desenvolvido por Miguel Afonso Castro de Almeida
 import { ConflictException, Injectable, UnauthorizedException, NotFoundException, BadRequestException} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -119,44 +120,51 @@ export class TurmaService {
     // Validar se a turma existe e pertence ao usuário
     const turma = await this.buscarTurmaPeloId(turmaId, userId);
 
-    // Parse do CSV
+    // --- Parse do CSV ---
+    // Usa o serviço de parsing que retorna uma lista de objetos { ra, nome }
+    // O serviço já realiza validações básicas (cabecalho, colunas, truncamento)
     const alunosCSV = this.csvParserService.parseCSV(csvContent);
 
     let alunosImportados = 0;
     let alunosJaExistentes = 0;
     const alunosParaAdicionar: AlunoEntity[] = [];
 
-    // Processar cada aluno do CSV
+    // --- Processamento dos registros ---
+    // Para cada registro retornado pelo parser:
+    // 1) valida o formato do RA (8 dígitos)
+    // 2) busca se já existe no banco
+    //    - se existir e não estiver associado à turma: associa e salva
+    //    - se existir e já estiver associado: conta como existente
+    //    - se não existir: cria objeto para inserir em lote
     for (const alunoCSV of alunosCSV) {
-      // Validar RA (deve ter exatamente 8 caracteres)
+      // Validar RA (deve ter exatamente 8 caracteres numéricos)
       if (alunoCSV.ra.length !== 8 || isNaN(Number(alunoCSV.ra))) {
         throw new BadRequestException(
           `RA inválido: "${alunoCSV.ra}". Deve conter 8 dígitos numéricos`,
         );
       }
 
-      // Procurar aluno existente
+      // Procurar aluno existente pelo RA (incluindo turmas associadas)
       let aluno = await this.alunoRepository.findOne({
         where: { ra: alunoCSV.ra },
         relations: ['turmas'],
       });
 
       if (aluno) {
-        // Se aluno já existe, verificar se já está na turma
-        const jaEstaAssociado = aluno.turmas.some(
-          (t) => t.id === turmaId,
-        );
+        // Aluno já existe no sistema
+        const jaEstaAssociado = aluno.turmas.some((t) => t.id === turmaId);
 
         if (!jaEstaAssociado) {
-          // Adicionar turma ao aluno existente
+          // Associa a turma ao aluno existente e salva a alteração
           aluno.turmas.push(turma);
           await this.alunoRepository.save(aluno);
           alunosImportados++;
         } else {
+          // Aluno já estava associado à turma — contar como existente
           alunosJaExistentes++;
         }
       } else {
-        // Criar novo aluno
+        // Aluno não existe — preparar para criação em lote (melhor performance)
         const novoAluno = this.alunoRepository.create({
           ra: alunoCSV.ra,
           nome: alunoCSV.nome,

@@ -1,3 +1,4 @@
+// Lucas Presendo Canhete
 import {
   Injectable,
   NotFoundException,
@@ -14,6 +15,11 @@ import { LancarNotaDTO } from './dto/lancar-nota.dto';
 import * as fs from 'fs';
 import * as path from 'path';
 
+/*
+  Tipagem auxiliar usada para compilar a tabela de notas por aluno.
+  - `notas` é um mapa onde a chave é a sigla do componente (ex: P1)
+    e o valor é a nota (ou null se ainda não lançada).
+*/
 export interface AlunoComNotas {
   id: string;
   ra: string;
@@ -37,6 +43,14 @@ export class NotasService {
     private readonly disciplinaRepository: Repository<DisciplinasEntity>,
   ) {}
 
+  /*
+    Lança (ou atualiza) a nota de um aluno para um componente em uma turma.
+
+    Fluxo:
+    - Verifica existência de aluno, componente e turma.
+    - Se já existir registro, atualiza o campo `valor`.
+    - Caso contrário, cria um novo registro de nota.
+  */
   async lancarNota(lancarNotaDTO: LancarNotaDTO): Promise<AlunoNotaEntity> {
     // Validar se aluno existe
     const aluno = await this.alunoRepository.findOne({
@@ -88,6 +102,12 @@ export class NotasService {
     return await this.alunoNotaRepository.save(nota);
   }
 
+  /*
+    Verifica se todos os alunos de uma turma possuem notas em todos os
+    componentes de uma disciplina.
+
+    Retorna um objeto com `completas: boolean` e lista de `alunosIncompletos`.
+  */
   async validarNotasCompletas(
     turmaId: string,
     disciplinaId: string,
@@ -142,6 +162,15 @@ export class NotasService {
     };
   }
 
+  /*
+    Gera um arquivo CSV com as notas da turma por disciplina.
+
+    Fluxo:
+    - Valida se todas as notas estão preenchidas (requer completas=true).
+    - Recupera alunos e componentes ordenados.
+    - Monta manualmente o conteúdo CSV e escreve em `./exports`.
+    - Retorna o caminho e nome do arquivo gerado.
+  */
   async exportarNotasCSV(
     turmaId: string,
     disciplinaId: string,
@@ -250,6 +279,7 @@ export class NotasService {
     };
   }
 
+  // Leitura síncrona do arquivo CSV gerado (se necessário em outro endpoint)
   obterArquivoCSV(fileName: string): Buffer {
     const filePath = path.join(process.cwd(), 'exports', fileName);
 
@@ -260,13 +290,13 @@ export class NotasService {
     return fs.readFileSync(filePath);
   }
 
-  // criando outra função para criar a tabela de notas
+  // Função que monta a tabela de notas em memória para exibição (frontend)
   async listarNotasTurmaDisciplina(
     turmaId: string,
-    disciplinaId: string
+    disciplinaId: string,
   ): Promise<{
-    alunos: AlunoComNotas[],
-    componentes: Array<{ id: string, sigla: string, nome: string, peso: number }>
+    alunos: AlunoComNotas[];
+    componentes: Array<{ id: string; sigla: string; nome: string; peso: number }>;
   }> {
     const turma = await this.turmaRepository.findOne({
       where: { id: turmaId },
@@ -276,7 +306,7 @@ export class NotasService {
 
     const componentes = await this.componenteNotaRepository.find({
       where: { disciplina: { id: disciplinaId } },
-      order: { sigla: 'ASC' }
+      order: { sigla: 'ASC' },
     });
 
     const alunosComNotas: AlunoComNotas[] = [];
@@ -285,15 +315,15 @@ export class NotasService {
         id: aluno.id,
         ra: aluno.ra,
         nome: aluno.nome,
-        notas: {}
+        notas: {},
       };
       for (const componente of componentes) {
         const nota = await this.alunoNotaRepository.findOne({
           where: {
             aluno: { id: aluno.id },
             componenteNota: { id: componente.id },
-            turma: { id: turmaId }
-          }
+            turma: { id: turmaId },
+          },
         });
         registro.notas[componente.sigla] = nota?.valor ?? null;
       }
@@ -302,15 +332,16 @@ export class NotasService {
 
     return {
       alunos: alunosComNotas,
-      componentes: componentes.map(c => ({
+      componentes: componentes.map((c) => ({
         id: c.id,
         sigla: c.sigla,
         nome: c.nome,
-        peso: c.peso
-      }))
+        peso: c.peso,
+      })),
     };
   }
 
+  // Remove arquivo temporário gerado pelo processo de exportação
   deletarArquivoTemporario(fileName: string): void {
     const filePath = path.join(process.cwd(), 'exports', fileName);
 

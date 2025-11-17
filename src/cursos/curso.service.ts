@@ -1,3 +1,4 @@
+// Lucas Presendo Canhete
 import { Injectable, NotFoundException, UnauthorizedException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
@@ -7,6 +8,14 @@ import { CriarCursoDto } from './criar-curso.dto';
 import { ListarCursoDto } from './listar-curso.dto';
 import { DisciplinasEntity } from "../disciplinas/disciplinas.entity";
 
+/*
+  Serviço que implementa a lógica de negócio para Cursos.
+
+  Principais responsabilidades:
+  - Criar curso associado a instituições e usuário.
+  - Listar cursos pertencentes a uma instituição (verificando o user).
+  - Remover curso (checando vínculos com disciplinas).
+*/
 @Injectable()
 export class CursoService {
   constructor(
@@ -18,6 +27,7 @@ export class CursoService {
   private readonly disciplinaRepository: Repository<DisciplinasEntity>
   ) {}
 
+  // Cria um curso e vincula às instituições informadas (se forem do usuário)
   async criarCurso(dto: CriarCursoDto, userId: string): Promise<ListarCursoDto> {
     // buscar todas as instituições informadas
     const instituicoes = await this.instituicaoRepository.findBy({
@@ -53,6 +63,8 @@ export class CursoService {
     };
   }
 
+  // Lista cursos de uma instituição, garantindo que a instituição esteja
+  // associada ao userId informado (controle de acesso básico)
   async listarCursosPorInstituicao(
     idInstituicao: string,
     userId: string,
@@ -74,6 +86,7 @@ export class CursoService {
     }));
   }
 
+  // Remove um curso se o usuário tiver permissão e se não houver disciplinas vinculadas
   async deletarCurso(id: string, userId: string): Promise<void> {
     const curso = await this.cursoRepository
       .createQueryBuilder('curso')

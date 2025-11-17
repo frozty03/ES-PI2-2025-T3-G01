@@ -1,3 +1,4 @@
+// Lucas Presendo Canhete
 import {
   Injectable,
   UnauthorizedException,
@@ -12,6 +13,14 @@ import { ListInstituicoesByUserDto } from './list-instituicoes-by-user.dto';
 import { UserEntity } from '../users/user.entity';
 import { CursoEntity } from '../cursos/curso.entity';
 
+/*
+  Serviço responsável por operações de CRUD/consulta para Instituições.
+
+  Principais regras de negócio:
+  - Ao criar, vincula a instituição ao usuário criador.
+  - Ao listar por usuário, retorna apenas instituições associadas.
+  - Ao deletar, verifica associação do usuário e ausência de cursos vinculados.
+*/
 @Injectable()
 export class InstituicaoService {
   constructor(
@@ -40,6 +49,7 @@ export class InstituicaoService {
     return instituicao;
   }
 
+  // Retorna uma lista simples de instituições associadas a um usuário
   async findByUserId(userId: string): Promise<ListInstituicoesByUserDto> {
     // procurar instituições associadas ao usuário via tabela associativa
     const instituicoes = await this.instituicaoRepository
@@ -63,6 +73,7 @@ export class InstituicaoService {
     };
   }
 
+  // Deleta uma instituição se o usuário estiver associado e não houver cursos vinculados
   async deleteInstituicao(instituicaoId: string, userId: string) {
     const instituicao = await this.instituicaoRepository.findOne({
       where: { id: instituicaoId },

@@ -1,3 +1,4 @@
+// Lucas Presendo Canhete
 import { Injectable, BadRequestException } from '@nestjs/common';
 
 export interface AlunoCSV {
@@ -15,6 +16,8 @@ export class CsvParserService {
    */
   parseCSV(fileContent: string): AlunoCSV[] {
     try {
+      // Separar o conteúdo do arquivo em linhas (removendo linhas vazias)
+      // Cada linha representa um registro (a primeira linha é o cabeçalho)
       const lines = fileContent
         .trim()
         .split('\n')
@@ -27,14 +30,19 @@ export class CsvParserService {
         );
       }
 
-      // Pular cabeçalho (primeira linha)
+      // Pular cabeçalho (primeira linha) — os dados começam na segunda linha
       const dataLines = lines.slice(1);
 
+      // Mapear cada linha de dados para o formato AlunoCSV
+      // - Divide a linha por vírgulas
+      // - Usa as duas primeiras colunas: RA e Nome (outras colunas são ignoradas)
+      // - Realiza validações simples e truncamentos para se adequar ao schema
       const alunos: AlunoCSV[] = dataLines
         .map((line, index) => {
-          // Dividir por vírgula, considerando possíveis espaços
+          // Dividir por vírgula, removendo espaços extras
           const columns = line.split(',').map((col) => col.trim());
 
+          // Cada registro deve possuir pelo menos duas colunas (RA e Nome)
           if (columns.length < 2) {
             throw new BadRequestException(
               `Linha ${index + 2} possui menos de 2 colunas. Esperado: matrícula, nome`,
@@ -44,7 +52,7 @@ export class CsvParserService {
           const ra = columns[0];
           const nome = columns[1];
 
-          // Validações básicas
+          // Validações básicas de presença
           if (!ra || ra.length === 0) {
             throw new BadRequestException(
               `Linha ${index + 2}: Matrícula não pode estar vazia`,
@@ -57,12 +65,14 @@ export class CsvParserService {
             );
           }
 
+          // Truncar campos para garantir compatibilidade com o banco
           return {
             ra: ra.substring(0, 8), // Limitar a 8 caracteres conforme schema do banco
             nome: nome.substring(0, 150), // Limitar a 150 caracteres conforme schema do banco
           };
         })
-        .filter((aluno) => aluno.ra && aluno.nome); // Filtrar registros vazios
+        // Filtrar eventuais registros incompletos
+        .filter((aluno) => aluno.ra && aluno.nome);
 
       if (alunos.length === 0) {
         throw new BadRequestException(
