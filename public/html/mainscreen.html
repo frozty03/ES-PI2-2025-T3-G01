@@ -16,7 +16,7 @@
     </header>
     <div class="container">
         <aside class="sidebar">
-            <h2>Usuário</h2>             
+            <h2 id="username">Usuário</h2>             
         </aside>
 
         <main class="main-content">
@@ -27,5 +27,15 @@
                 </div>   
         </main>
     </div>
+
+    <script>
+        // pega o nome do usuario
+        const nomeUsuario = localStorage.getItem('user_nome');
+        const userId = localStorage.getItem('user_id');
+
+        if (nomeUsuario) {
+            document.getElementById('username').textContent = nomeUsuario;
+        }
+    </script>
     </body>
 </html>

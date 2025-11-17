@@ -1,3 +1,6 @@
+// Feito por: Davi Froza
+
+
 import { Post, Param, Query, Put, Res, Get, Controller, Body, HttpCode, HttpStatus, HttpException } from "@nestjs/common";
 import { v4 as uuid } from 'uuid';
 import { CriarUserDTO } from "./criarUser.dto";
@@ -49,10 +52,10 @@ export class UserController {
     }
 
     //ESQUECI SENHA ESTRUTURA
-  //onde o link é enviado
+    //onde o link é enviado
     @HttpCode(HttpStatus.OK)
     @Post('esqueci-senha')
-  //valida o email recebido
+    //valida o email recebido
     async esqueciSenha(@Body() esqueciSenhaDto: EsqueciSenhaDto) {
     // captura erros do envio de email
     try {

@@ -1,0 +1,293 @@
+<!-- Desenvolvido Julia Da Silva Maia -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../assets/css/turmas.css"> 
+    <link rel="icon" type="img/png" href="/assets/img/LogoNotaDez.svg">
+    <title>Turmas - NotaDez</title>
+</head>
+<style>
+    .btn-voltar {
+        background-color: #FCC61D; 
+        color: #3338A0; 
+        border: none;
+        padding: 0.4rem 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-voltar:hover {
+        background-color: #eab518; 
+    }
+</style>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="/assets/img/LogoNotaDez.svg" alt="Logo NotaDez">
+                <h1><span class="title-nota">Nota</span><span class="title-dez">Dez</span></h1>
+            </div>
+            <div class="user-profile">
+                <span class="user-label">Usuário:</span>
+                <span id="user-name">Carregando...</span>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav">
+                <h3>Instituições:</h3>
+                <ul id="institutions-list"></ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="content-card">
+                <header class="content-header">
+                    <button id="btn-voltar" class="btn-voltar">Voltar</button>
+                    <h1 id="main-title">Carregando...</h1>
+                    <button class="btn-cadastrar" id="open-add-modal-btn">Cadastrar</button>
+                </header>
+                <section class="turmas-grid" id="turmas-grid">
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <div id="add-turma-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-add-modal-btn">&times;</span>
+            <h2>Cadastrar Nova Turma</h2>
+            <form id="add-turma-form">
+                <div class="input-box">
+                    <label for="turma-cod">Código:</label>
+                    <input type="number" id="turma-cod" name="cod" placeholder="Digite o código" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" id="cancel-add-btn">Cancelar</button>
+                    <button type="submit" class="btn-confirm">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="delete-confirm-modal" class="modal">
+        <div class="modal-content">
+            <h2>Confirmar Exclusão</h2>
+            <p>Você tem certeza que deseja excluir a turma "<span id="turma-to-delete-name"></span>"?</p>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" id="cancel-delete-btn">Cancelar</button>
+                <button type="button" class="btn-confirm-delete" id="confirm-delete-btn">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getDisciplinaParamsFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                id: params.get('disciplina_id'),
+                nome: params.get('disciplina_nome')
+            };
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const API_BASE = 'http://localhost:3000';
+            const userNameSpan = document.getElementById('user-name');
+            const mainTitle = document.getElementById('main-title');
+            const turmasGrid = document.getElementById('turmas-grid');
+            const userId = localStorage.getItem('user_id');
+
+            // pega id e nome da disciplina da URL
+            const disciplinaParams = getDisciplinaParamsFromURL();
+            const disciplinaId = disciplinaParams.id;
+            const disciplinaNome = disciplinaParams.nome;
+
+            mainTitle.textContent = disciplinaNome
+                ? `Turmas de ${decodeURIComponent(disciplinaNome)}`
+                : 'Turmas da Disciplina';
+
+            document.getElementById('btn-voltar').addEventListener('click', () => {
+                const params = new URLSearchParams(window.location.search);
+                const cursoId = params.get('curso_id');
+                
+                if (cursoId) {
+                    window.location.href = `/html/disciplinas.html?curso_id=${cursoId}`;
+                } else {
+                    window.history.back();
+                }
+            });
+
+            async function fetchTurmasAndRenderGrid() {
+                try {
+                    const res = await fetch(`${API_BASE}/turmas/disciplina/${disciplinaId}/user/${userId}`);
+                    const turmas = await res.json();
+                    renderTurmasGrid(turmas);
+                } catch {
+                    turmasGrid.innerHTML = '<p>Erro ao carregar turmas.</p>';
+                }
+            }
+
+            function renderTurmasGrid(turmas) {
+                turmasGrid.innerHTML = '';
+                if (!turmas.length) {
+                    turmasGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding-top: 50px; color: black;">
+                        <p>Nenhuma turma cadastrada para esta disciplina.</p>
+                    </div>
+                `;
+                    return;
+                }
+                turmas.forEach(turma => {
+                    const card = document.createElement('div');
+                    card.className = 'turma-card';
+                    card.dataset.id = turma.id;
+                    card.innerHTML = `
+                    <span class="card-name">Turma ${turma.cod}</span>
+                    <div class="card-options">
+                        <button class="options-btn">&#x22EE;</button>
+                        <div class="options-menu">
+                        <button class="delete-btn">Excluir</button>
+                        </div>
+                    </div>
+                    `;
+                    turmasGrid.appendChild(card);
+                });
+            }
+
+            document.getElementById('add-turma-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const cod = document.getElementById('turma-cod').value;
+                const codParsed = parseInt(cod);
+                if (!codParsed) {
+                    alert('Código da turma inválido!');
+                    return;
+                }
+
+                console.log({
+                    cod: codParsed,
+                    id_disciplina: disciplinaId,
+                    userId: userId
+                });
+
+                try {
+                    const res = await fetch(`${API_BASE}/turmas/user/${userId}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            cod: codParsed,
+                            disciplinasIds: [disciplinaId]
+                        })
+                    });
+                    if (!res.ok) {
+                        const errorText = await res.text();
+                        alert('Erro ao cadastrar turma: ' + errorText);
+                        return;
+                    }
+                    await fetchTurmasAndRenderGrid();
+                    document.getElementById('add-turma-modal').style.display = 'none';
+                    e.target.reset();
+                } catch (err) {
+                    alert('Erro ao cadastrar turma.');
+                }
+            });
+
+            document.getElementById('open-add-modal-btn').addEventListener('click', () => {
+                document.getElementById('add-turma-modal').style.display = 'flex';
+            });
+            document.getElementById('close-add-modal-btn').addEventListener('click', () => {
+                document.getElementById('add-turma-modal').style.display = 'none';
+            });
+            document.getElementById('cancel-add-btn').addEventListener('click', () => {
+                document.getElementById('add-turma-modal').style.display = 'none';
+            });
+
+            userNameSpan.textContent = localStorage.getItem('user_nome') || 'Visitante';
+            fetchTurmasAndRenderGrid();
+
+            function renderInstitutions(list) {
+                const ul = document.getElementById('institutions-list');
+                ul.innerHTML = '';
+                list.forEach(inst => {
+                const li = document.createElement('li');
+                li.textContent = inst.nome;
+                li.dataset.id = inst.id;
+                li.className = "institution-item";
+                li.style.cursor = "pointer";
+                li.onclick = () => {
+                    window.location.href = `/html/cursos.html?inst_id=${inst.id}`;
+                };
+                ul.appendChild(li);
+                });
+            }
+
+            fetch(`${API_BASE}/instituicoes/user/${userId}`)
+                .then(res => res.json())
+                .then(data => renderInstitutions(data.instituicoes || []));
+
+
+            turmasGrid.addEventListener('click', e => {
+                if (e.target.classList.contains('options-btn')) {
+                    const menu = e.target.nextElementSibling;
+                    document.querySelectorAll('.options-menu').forEach(m => {
+                    if (m !== menu) m.style.display = 'none';
+                    });
+                    menu.style.display = (menu.style.display === 'block' ? 'none' : 'block');
+                    return;
+                }
+                
+                if (e.target.classList.contains('delete-btn')) {
+                    const card = e.target.closest('.turma-card');
+                    const turmaId = card.dataset.id;
+
+                    const turmaCod = card.querySelector('.card-name').textContent;
+                    document.getElementById('turma-to-delete-name').textContent = turmaCod;
+                    document.getElementById('delete-confirm-modal').dataset.id = turmaId;
+                    document.getElementById('delete-confirm-modal').style.display = 'flex';
+                }
+
+                if (e.target.classList.contains('options-btn') ||
+                    e.target.classList.contains('delete-btn') ||
+                    e.target.classList.contains('edit-btn')
+                ) {
+                    return;
+                }
+                const card = e.target.closest('.turma-card');
+                if (card) {
+                    const turmaId = card.dataset.id;
+                    window.location.href = `/html/notas.html?turma_id=${turmaId}&disciplina_id=${disciplinaId}`;
+                }
+            });
+
+            document.getElementById('cancel-delete-btn').addEventListener('click', () => {
+            document.getElementById('delete-confirm-modal').style.display = 'none';
+            });
+
+            document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+            const deleteModal = document.getElementById('delete-confirm-modal');
+            const turmaId = deleteModal.dataset.id;
+            try {
+                const res = await fetch(`${API_BASE}/turmas/${turmaId}/user/${userId}`, {
+                method: "DELETE"
+                });
+                if (!res.ok) {
+                const errorText = await res.text();
+                alert('Erro ao excluir turma: ' + errorText);
+                return;
+                }
+                // Atualiza lista e fecha o modal
+                await fetchTurmasAndRenderGrid();
+                deleteModal.style.display = 'none';
+            } catch (err) {
+                alert('Erro ao excluir turma.');
+            }
+            });
+
+        });
+    </script>
+</body>
+</html>

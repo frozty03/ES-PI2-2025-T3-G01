@@ -1,0 +1,488 @@
+<!-- Desenvolvido por Pedro Henrique Bonetto da Costa -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../assets/css/styleDisciplinas.css"> 
+    <link rel="icon" type="img/png" href="/assets/img/LogoNotaDez.svg">
+    <title>Disciplinas - NotaDez</title>
+</head>
+<style>
+    .btn-voltar {
+        background-color: #FCC61D; 
+        color: #3338A0; 
+        border: none;
+        padding: 0.4rem 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-voltar:hover {
+        background-color: #eab518; 
+    }
+</style>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="/assets/img/LogoNotaDez.svg" alt="Logo NotaDez">
+                <h1><span class="title-nota">Nota</span><span class="title-dez">Dez</span></h1>
+            </div>
+            <div class="user-profile">
+                <span class="user-label">Usuário:</span>
+                <span id="user-name">Carregando...</span>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav">
+                <h3>Instituições:</h3>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="content-card">
+                <header class="content-header">
+                    <button id="btn-voltar" class="btn-voltar">Voltar</button>
+                    <h1 id="main-title">Carregando...</h1>
+                    <button class="btn-cadastrar" id="open-add-modal-btn">Cadastrar</button>
+                </header>
+                <section class="disciplines-grid" id="disciplines-grid">
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <div id="add-discipline-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-add-modal-btn">&times;</span>
+            <h2>Cadastrar Nova Disciplina</h2>
+            <form id="add-discipline-form">
+                <div class="input-box">
+                    <label for="discipline-code">Código:</label>
+                    <input type="number" id="discipline-code" name="cod" placeholder="Digite o código" required>
+                </div>
+                <div class="input-box">
+                    <label for="discipline-name">Nome da Disciplina:</label>
+                    <input type="text" id="discipline-name" name="nome" placeholder="Digite o nome" required>
+                </div>
+                <div class="input-box">
+                    <label for="discipline-sigla">Sigla:</label>
+                    <input type="text" id="discipline-sigla" name="sigla" placeholder="Ex: MAT" maxlength="10" required>
+                </div>
+                <div class="input-box">
+                    <label for="discipline-periodo">Período:</label>
+                    <input type="text" id="discipline-periodo" name="periodo" placeholder="Ex: 1" maxlength="2" required>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" id="cancel-add-btn">Cancelar</button>
+                    <button type="submit" class="btn-confirm">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="delete-confirm-modal" class="modal">
+        <div class="modal-content">
+            <h2>Confirmar Exclusão</h2>
+            <p>Você tem certeza que deseja excluir a disciplina "<span id="discipline-to-delete-name"></span>"?</p>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" id="cancel-delete-btn">Cancelar</button>
+                <button type="button" class="btn-confirm-delete" id="confirm-delete-btn">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+        const API_BASE = 'http://localhost:3000';
+
+        const userNameSpan = document.getElementById('user-name');
+        const mainTitle = document.getElementById('main-title');
+        const addModal = document.getElementById('add-discipline-modal');
+        const deleteModal = document.getElementById('delete-confirm-modal');
+        const disciplinesGrid = document.getElementById('disciplines-grid');
+        const sidebarNav = document.getElementById('sidebar-nav');
+        const form = document.getElementById('add-discipline-form');
+        const compsDiv = document.createElement('div');
+
+        let currentInstitution = null;
+        let currentCourseId = null;
+        let disciplines = [];
+        let institutions = [];
+
+        const userId = localStorage.getItem('user_id');
+
+        function getCourseIdFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('curso_id');
+        }
+
+        document.getElementById('btn-voltar').addEventListener('click', () => {
+        const params = new URLSearchParams(window.location.search);
+        const instId = params.get('inst_id');
+        
+        if (instId) {
+            window.location.href = `/html/cursos.html?inst_id=${instId}`;
+        } else {
+            window.history.back();
+        }
+    });
+
+        // monta os campos do componente de nota
+        function addNotaComponentField(index = null, compData = null) {
+            const container = compsDiv;
+            const fieldsIdx = index !== null ? index : container.children.length;
+            const compDiv = document.createElement('div');
+            compDiv.className = 'nota-component-input';
+            compDiv.innerHTML = `
+                <div class="input-group">
+                    <label>Nome do componente:</label>
+                    <input type="text" name="componentesNota[${fieldsIdx}][nome]" required placeholder="Ex: Prova 1" minlength="2" maxlength="150" value="${compData ? compData.nome : ""}">
+                </div>
+                <div class="input-group">
+                    <label>Sigla:</label>
+                    <input type="text" name="componentesNota[${fieldsIdx}][sigla]" required placeholder="Ex: P1" minlength="1" maxlength="10" value="${compData ? compData.sigla : ""}">
+                </div>
+                <div class="input-group">
+                    <label>Descrição:</label>
+                    <input type="text" name="componentesNota[${fieldsIdx}][descricao]" required placeholder="Breve descrição" minlength="1" maxlength="255" value="${compData ? compData.descricao : ""}">
+                </div>
+                <div class="input-group">
+                    <label>Peso:</label>
+                    <input type="number" step="any" name="componentesNota[${fieldsIdx}][peso]" required placeholder="Ex: 4" value="${compData ? compData.peso : ""}">
+                </div>
+                <button type="button" class="remove-comp-btn">Remover</button>
+            `;
+            compDiv.querySelector('.remove-comp-btn').onclick = () => compDiv.remove();
+            container.appendChild(compDiv);
+        }
+
+        // adiciona container e botão de adicionar ao form do modal
+        if (!form.contains(compsDiv)) {
+            compsDiv.id = "componentes-nota-fields";
+            form.appendChild(compsDiv);
+
+            const addCompBtn = document.createElement('button');
+            addCompBtn.type = "button";
+            addCompBtn.textContent = "Adicionar Componente de Nota";
+            addCompBtn.className = "btn-add-comp";
+            addCompBtn.onclick = () => addNotaComponentField();
+            form.appendChild(addCompBtn);
+        }
+
+        function displayUserName() {
+            const userName = localStorage.getItem('user_nome');
+            userNameSpan.textContent = userName || 'Visitante';
+        }
+
+        async function fetchInstitutionsAndRenderSidebar() {
+            try {
+                const res = await fetch(`${API_BASE}/instituicoes/user/${userId}`);
+                const data = await res.json();
+                institutions = data.instituicoes || [];
+                renderSidebar();
+            } catch {
+                sidebarNav.innerHTML = '<h3>Instituições:</h3><p>Erro ao carregar instituições.</p>';
+            }
+        }
+
+        function renderSidebar() {
+            sidebarNav.innerHTML = '<h3>Instituições:</h3>';
+            const ul = document.createElement('ul');
+            institutions.forEach(inst => {
+                const li = document.createElement('li');
+                li.dataset.id = inst.id;
+                li.textContent = inst.nome;
+                ul.appendChild(li);
+            });
+            sidebarNav.appendChild(ul);
+        }
+
+        // busca disciplinas do curso
+        async function fetchDisciplinesAndRenderGrid() {
+            currentCourseId = getCourseIdFromURL();
+            try {
+                const res = await fetch(`${API_BASE}/disciplinas/curso/${currentCourseId}/user/${userId}`);
+                disciplines = await res.json();
+                renderDisciplineGrid();
+            } catch {
+                disciplinesGrid.innerHTML = '<p>Erro ao carregar disciplinas.</p>';
+            }
+        }
+
+        function renderDisciplineGrid() {
+            disciplinesGrid.innerHTML = '';
+            if (!disciplines.length) {
+                disciplinesGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding-top: 50px; color: black;">
+                        <p>Nenhuma disciplina cadastrada para este curso.</p>
+                    </div>
+                `;
+                return;
+            }
+            disciplines.forEach(discipline => {
+                const card = document.createElement('div');
+                card.className = 'discipline-card';
+                card.dataset.id = discipline.id;
+                card.innerHTML = `
+                    <span class="card-name">${discipline.nome}</span>
+                    <div class="card-options">
+                        <button class="options-btn">⋮</button>
+                        <div class="options-menu">
+                            <button class="edit-btn">Editar</button>
+                            <button class="delete-btn">Excluir</button>
+                        </div>
+                    </div>
+                `;
+                disciplinesGrid.appendChild(card);
+            });
+        }
+
+        function displayMainTitle() {
+            mainTitle.textContent = `Disciplinas do Curso`;
+        }
+
+        async function addDiscipline(data) {
+            try {
+                const body = {
+                    cod: parseInt(data.cod),
+                    nome: data.nome,
+                    sigla: data.sigla,
+                    periodo: data.periodo,
+                    cursosIds: [currentCourseId],
+                    componentesNota: data.componentesNota
+                };
+                const res = await fetch(`${API_BASE}/disciplinas/user/${userId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    throw new Error(errorText);
+                }
+                await fetchDisciplinesAndRenderGrid();
+            } catch (err) {
+                alert('Erro ao cadastrar disciplina: ' + err.message);
+            }
+        }
+
+        async function deleteDiscipline(disciplineId) {
+            try {
+                const res = await fetch(`${API_BASE}/disciplinas/${disciplineId}/user/${userId}`, { method: 'DELETE' });
+                if (!res.ok) {
+                // tenta ler erro em json
+                let errorMsg = 'Erro ao excluir disciplina';
+                try {
+                    const errorJson = await res.json();
+                    if (errorJson && errorJson.message) errorMsg = errorJson.message;
+                } catch {
+                    // se não funcionar, tenta como texto msm
+                    const errorText = await res.text();
+                    if (errorText) errorMsg = errorText;
+                }
+                throw new Error(errorMsg);
+                }
+                await fetchDisciplinesAndRenderGrid();
+            } catch (err) {
+                alert('Erro ao excluir disciplina. ' + err.message);
+            }
+        }
+
+        
+
+        function showModal(modal) {
+            modal.style.display = 'flex';
+            // ao abrir, limpa campos de componentes
+            compsDiv.innerHTML = "";
+            addNotaComponentField(); // começa sempre com um
+        }
+        function hideModal(modal) {
+            modal.style.display = 'none';
+        }
+
+        document.getElementById('open-add-modal-btn').addEventListener('click', () => showModal(addModal));
+        document.getElementById('close-add-modal-btn').addEventListener('click', () => hideModal(addModal));
+        document.getElementById('cancel-add-btn').addEventListener('click', () => hideModal(addModal));
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const cod = form.querySelector('#discipline-code').value;
+            const nome = form.querySelector('#discipline-name').value;
+            const sigla = form.querySelector('#discipline-sigla').value;
+            const periodo = form.querySelector('#discipline-periodo').value;
+
+            const componentesNota = [...form.querySelectorAll('.nota-component-input')].map(div => ({
+                nome: div.querySelector('input[name*="[nome]"]').value,
+                sigla: div.querySelector('input[name*="[sigla]"]').value,
+                descricao: div.querySelector('input[name*="[descricao]"]').value,
+                peso: parseFloat(div.querySelector('input[name*="[peso]"]').value)
+            }));
+
+            const isEditing = Boolean(form.dataset.editId);
+
+            if (isEditing) {
+                await updateDiscipline({
+                    id: form.dataset.editId,
+                    cod,
+                    nome,
+                    sigla,
+                    periodo,
+                    componentesNota
+                });
+                // limpa flag de edição
+                form.dataset.editId = '';
+                addModal.querySelector('h2').textContent = 'Cadastrar Nova Disciplina';
+                addModal.querySelector('.btn-confirm').textContent = 'Salvar';
+            } else {
+                await addDiscipline({
+                    cod,
+                    nome,
+                    sigla,
+                    periodo,
+                    componentesNota
+                });
+            }
+
+            form.reset();
+            hideModal(addModal);
+        });
+
+        disciplinesGrid.addEventListener('click', (e) => {
+            if (e.target.classList.contains('options-btn')) {
+                const menu = e.target.nextElementSibling;
+                document.querySelectorAll('.options-menu').forEach(m => {
+                    if (m !== menu) m.style.display = 'none';
+                });
+                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+                return;
+            }
+            if (e.target.classList.contains('options-btn')) {
+                const menu = e.target.nextElementSibling;
+                document.querySelectorAll('.options-menu').forEach(m => {
+                    if (m !== menu) m.style.display = 'none';
+                });
+                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+                return;
+            }
+            if (e.target.classList.contains('edit-btn')) {
+                const card = e.target.closest('.discipline-card');
+                const id = card.dataset.id;
+                const discipline = disciplines.find(d => String(d.id) === String(id));
+                openEditDisciplineModal(discipline);
+                return;
+            }
+            if (e.target.classList.contains('delete-btn')) {
+                const card = e.target.closest('.discipline-card');
+                const id = card.dataset.id;
+                const discipline = disciplines.find(d => String(d.id) === String(id));
+                document.getElementById('discipline-to-delete-name').textContent = discipline.nome;
+                deleteModal.dataset.id = id;
+                showModal(deleteModal);
+                return;
+            }
+            // mudando de tela
+            if (!e.target.classList.contains('options-btn') &&
+                    !e.target.classList.contains('edit-btn') &&
+                    !e.target.classList.contains('delete-btn')) {
+                    
+                    const card = e.target.closest('.discipline-card');
+                    if (card) {
+                        const disciplinaId = card.dataset.id;
+                        const disciplina = disciplines.find(d => String(d.id) === String(disciplinaId));
+                        window.location.href = `/html/turmas.html?disciplina_id=${disciplinaId}&disciplina_nome=${encodeURIComponent(disciplina.nome)}`;
+                    }
+                }
+            });
+
+
+        document.getElementById('cancel-delete-btn').addEventListener('click', () => hideModal(deleteModal));
+
+        document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+            const idToDelete = deleteModal.dataset.id;
+            await deleteDiscipline(idToDelete);
+            hideModal(deleteModal);
+        });
+
+        sidebarNav.addEventListener('click', (e) => {
+            const li = e.target.closest('li');
+            if (li && li.dataset.id) {
+                window.location.href = `/html/cursos.html?inst_id=${li.dataset.id}`;
+            }
+        });
+
+        // ao abrir a tela
+        (async () => {
+            displayUserName();
+            displayMainTitle();
+            await fetchInstitutionsAndRenderSidebar();
+            await fetchDisciplinesAndRenderGrid();
+        })();
+
+        // só pra pegar o nome do curso e deixar bonitnho
+        function getCourseNomeFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('curso_nome');
+        }
+
+        function displayMainTitle() {
+            const cursoNome = getCourseNomeFromURL();
+            mainTitle.textContent = cursoNome
+            ? `Disciplinas de ${decodeURIComponent(cursoNome)}`
+            : `Disciplinas do Curso`;
+        }
+
+        function openEditDisciplineModal(discipline) {
+            // campos principais
+            form.querySelector('#discipline-code').value = discipline.cod || '';
+            form.querySelector('#discipline-name').value = discipline.nome || '';
+            form.querySelector('#discipline-sigla').value = discipline.sigla || '';
+            form.querySelector('#discipline-periodo').value = discipline.periodo || '';
+
+            compsDiv.innerHTML = "";
+            if (discipline.componentesNota && discipline.componentesNota.length) {
+                discipline.componentesNota.forEach((comp, idx) => addNotaComponentField(idx, comp));
+            } else {
+                addNotaComponentField();
+            }
+
+            form.dataset.editId = discipline.id;
+            addModal.querySelector('h2').textContent = 'Editar Disciplina';
+            addModal.querySelector('.btn-confirm').textContent = 'Salvar Alterações';
+            showModal(addModal);
+        }
+
+        async function updateDiscipline(data) {
+            try {
+                const body = {
+                    cod: parseInt(data.cod),
+                    nome: data.nome,
+                    sigla: data.sigla,
+                    periodo: data.periodo,
+                    componentesNota: data.componentesNota
+                };
+                const res = await fetch(`${API_BASE}/disciplinas/${data.id}/user/${userId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    throw new Error(errorText);
+                }
+                await fetchDisciplinesAndRenderGrid();
+            } catch (err) {
+                alert('Erro ao editar disciplina: ' + err.message);
+            }
+        }
+
+    });
+    </script>
+</body>
+</html>

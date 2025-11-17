@@ -1,3 +1,4 @@
+// Lucas Presendo Canhete
 import {
   Entity,
   Column,
@@ -10,6 +11,12 @@ import { UserEntity } from '../users/user.entity';
 // Import CursoEntity for the many-to-many relationship
 import { CursoEntity } from '../cursos/curso.entity';
 
+/*
+  Entidade Instituicao:
+
+  - `users`: usuários associados (tabela associativa `Atua_User_Instituicao`).
+  - `cursos`: cursos oferecidos (tabela associativa `Oferece_Curso_Instituicao`).
+*/
 @Entity({ name: 'Instituicoes' })
 export class InstituicaoEntity {
   @PrimaryGeneratedColumn('uuid')

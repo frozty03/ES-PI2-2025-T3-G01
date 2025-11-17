@@ -1,3 +1,6 @@
+// Feito por: Davi Froza
+
+
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserService } from "./user.service";

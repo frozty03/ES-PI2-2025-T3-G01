@@ -1,3 +1,6 @@
+// Feito por: Davi Froza
+
+
 import { ConflictException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm"; // repository pattern
 import { CriarUserDTO } from "./criarUser.dto";
@@ -71,7 +74,9 @@ export class UserService {
         const tokenAcesso = await this.jwtService.signAsync(payload);
 
         return {
-            acess_token: tokenAcesso,
+            access_token: tokenAcesso,
+            id: usuario.id, // informações para personalização no front da tela principal
+            nome: usuario.nome,
             message: 'Login realizado com sucesso'
         };
     }

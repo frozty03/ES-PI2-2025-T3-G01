@@ -1,8 +1,20 @@
-import { Body, Controller, Get, Param, Post, Delete } from '@nestjs/common';
+// Feito por: Lucas Presende e Davi Froza
+
+
+import { Body, Controller, Get, Param, Post, Delete, Put } from '@nestjs/common';
 import { InstituicaoService } from './instituicao.service';
 import { CreateInstituicaoDto } from './criarInstituicao.dto';
 import { ListInstituicoesByUserDto } from './list-instituicoes-by-user.dto';
+import { AtualizarInstituicaoDTO } from './atualizarInstituicao.dto';
 
+/*
+  Controller para operações sobre Instituições.
+
+  Endpoints:
+  - `POST /instituicoes/user/:userId`: cria instituição vinculada ao usuário.
+  - `DELETE /instituicoes/:id/user/:userId`: deleta instituição (verifica associação).
+  - `GET /instituicoes/user/:userId`: lista instituições associadas ao usuário.
+*/
 @Controller('instituicoes')
 export class InstituicaoController {
   constructor(private readonly instituicaoService: InstituicaoService) {}
@@ -30,5 +42,19 @@ export class InstituicaoController {
     @Param('userId') userId: string,
   ): Promise<ListInstituicoesByUserDto> {
     return this.instituicaoService.findByUserId(userId);
+  }
+
+  @Put(':id/user/:userId')
+  async atualizarInstituicao(
+    @Param('id') id: string,
+    @Param('userId') userId: string,
+    @Body() atualizarInstituicaoDTO: AtualizarInstituicaoDTO
+  ) {
+      const instituicao = await this.instituicaoService.atualizarInstituicao(id, userId, atualizarInstituicaoDTO);
+
+      return {
+        instituicao,
+        message: 'Instituicao atualizada com sucesso!'
+      }
   }
 }

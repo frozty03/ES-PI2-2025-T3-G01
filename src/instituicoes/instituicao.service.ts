@@ -1,7 +1,11 @@
+// Feito por: Lucas Presende e Davi Froza
+
+
 import {
   Injectable,
   UnauthorizedException,
   NotFoundException,
+  ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -9,7 +13,17 @@ import { InstituicaoEntity } from './instituicao.entity';
 import { CreateInstituicaoDto } from './criarInstituicao.dto';
 import { ListInstituicoesByUserDto } from './list-instituicoes-by-user.dto';
 import { UserEntity } from '../users/user.entity';
+import { CursoEntity } from '../cursos/curso.entity';
+import { AtualizarInstituicaoDTO } from './atualizarInstituicao.dto';
 
+/*
+  Serviço responsável por operações de CRUD/consulta para Instituições.
+
+  Principais regras de negócio:
+  - Ao criar, vincula a instituição ao usuário criador.
+  - Ao listar por usuário, retorna apenas instituições associadas.
+  - Ao deletar, verifica associação do usuário e ausência de cursos vinculados.
+*/
 @Injectable()
 export class InstituicaoService {
   constructor(
@@ -17,6 +31,8 @@ export class InstituicaoService {
     private readonly instituicaoRepository: Repository<InstituicaoEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(CursoEntity)
+    private readonly cursoRepository: Repository<CursoEntity>
   ) {}
 
   // criar instituição e associar obrigatoriamente a um usuário (userId do usuário logado)
@@ -36,6 +52,7 @@ export class InstituicaoService {
     return instituicao;
   }
 
+  // Retorna uma lista simples de instituições associadas a um usuário
   async findByUserId(userId: string): Promise<ListInstituicoesByUserDto> {
     // procurar instituições associadas ao usuário via tabela associativa
     const instituicoes = await this.instituicaoRepository
@@ -59,6 +76,7 @@ export class InstituicaoService {
     };
   }
 
+  // Deleta uma instituição se o usuário estiver associado e não houver cursos vinculados
   async deleteInstituicao(instituicaoId: string, userId: string) {
     const instituicao = await this.instituicaoRepository.findOne({
       where: { id: instituicaoId },
@@ -73,7 +91,48 @@ export class InstituicaoService {
       );
     }
 
+    const cursosVinculados = await this.cursoRepository
+    .createQueryBuilder('curso')
+    .innerJoin('curso.instituicoes', 'instituicao')
+    .where('instituicao.id = :id', { id: instituicaoId })
+    .getCount();
+
+    if (cursosVinculados > 0) {
+      throw new ConflictException('Não é possível excluir a instituição: existem cursos vinculados.');
+    }
+
     await this.instituicaoRepository.delete(instituicaoId);
     return { success: true };
   }
+
+
+  async buscarInstituicaoId(id: string, userId: string): Promise<InstituicaoEntity> {
+          const instituicao = await this.instituicaoRepository
+              .createQueryBuilder('i')
+              .innerJoin('i.users', 'user')
+              .leftJoinAndSelect('i.users', 'users')
+              .where('i.id = :id', { id })
+              .andWhere('user.id = :userId', { userId })
+              .getOne(); 
+  
+          if (!instituicao) {
+              throw new NotFoundException('Instituicao não encontrada');
+          }
+  
+          return instituicao;
+      }
+
+  async atualizarInstituicao(
+          id: string,
+          userId: string,
+          atualizarInstituicaoDTO: AtualizarInstituicaoDTO
+      ): Promise<InstituicaoEntity> {
+          const instituicao = await this.buscarInstituicaoId(id, userId);
+  
+          Object.assign(instituicao, {
+              nome: atualizarInstituicaoDTO.nome ?? instituicao.nome
+          }); 
+  
+          return await this.instituicaoRepository.save(instituicao);
+      }
 }
