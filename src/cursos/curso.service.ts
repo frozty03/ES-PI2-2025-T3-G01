@@ -1,23 +1,13 @@
-<<<<<<< HEAD
-// Lucas Presendo Canhete
-import { Injectable, NotFoundException, UnauthorizedException, ConflictException } from '@nestjs/common';
-=======
 // Feito por: Lucas Presende e Davi Froza
-
-
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
->>>>>>> feat/frontNotas
+import { Injectable, NotFoundException, UnauthorizedException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { CursoEntity } from './curso.entity';
 import { InstituicaoEntity } from '../instituicoes/instituicao.entity';
 import { CriarCursoDto } from './criar-curso.dto';
 import { ListarCursoDto } from './listar-curso.dto';
-<<<<<<< HEAD
 import { DisciplinasEntity } from "../disciplinas/disciplinas.entity";
-=======
 import { AtualizarCursoDto } from './atualizar-curso.dto';
->>>>>>> feat/frontNotas
 
 /*
   Serviço que implementa a lógica de negócio para Cursos.

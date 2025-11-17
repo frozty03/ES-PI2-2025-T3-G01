@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-// Lucas Presendo Canhete
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
-=======
 // Feito por: Lucas Presende e Davi Froza
 
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
->>>>>>> feat/frontNotas
 import { CursoService } from './curso.service';
 import { CriarCursoDto } from './criar-curso.dto';
 import { ListarCursoDto } from './listar-curso.dto';
