@@ -1,3 +1,4 @@
+// Desenvolvido por Miguel Afonso Castro de Almeida
 import { IsNotEmpty, IsInt, Length, IsArray, IsUUID } from 'class-validator';
 import { Type } from 'class-transformer';
 

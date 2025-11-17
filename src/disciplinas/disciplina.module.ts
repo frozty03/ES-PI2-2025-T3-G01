@@ -8,10 +8,12 @@ import { TurmaEntity } from "src/turmas/turma.entity";
 import { ComponenteNotaEntity } from "./componente-nota.entity";
 import { ComponenteNotaService } from "./componente-nota.service";
 import { ComponenteNotaController } from "./componente-nota.controller";
+import { TurmaModule } from '../turmas/turma.module';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([DisciplinasEntity, CursoEntity, TurmaEntity,ComponenteNotaEntity])
+        TypeOrmModule.forFeature([DisciplinasEntity, CursoEntity, TurmaEntity,ComponenteNotaEntity]),
+        TurmaModule
     ],
     controllers: [DisciplinaController,ComponenteNotaController],
     providers: [DisciplinaService, ComponenteNotaService],

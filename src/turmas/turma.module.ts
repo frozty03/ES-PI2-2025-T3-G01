@@ -1,3 +1,4 @@
+// Desenvolvido por Miguel Afonso Castro de Almeida
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TurmaEntity } from './turma.entity';

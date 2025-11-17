@@ -5,13 +5,14 @@ import { OfereceCursoInstituicaoEntity } from './oferece-curso-instituicao.entit
 import { CursoService } from './curso.service';
 import { CursoController } from './curso.controller';
 import { InstituicaoEntity } from '../instituicoes/instituicao.entity';
-
+import { DisciplinasEntity } from "../disciplinas/disciplinas.entity";
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       CursoEntity,
       OfereceCursoInstituicaoEntity,
       InstituicaoEntity,
+      DisciplinasEntity,
     ]),
   ],
   providers: [CursoService],

@@ -1,3 +1,4 @@
+// Desenvolvido por Miguel Afonso Castro de Almeida
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { DisciplinasEntity } from './disciplinas.entity';
 

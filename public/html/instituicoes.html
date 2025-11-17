@@ -1,3 +1,4 @@
+<!-- Desenvolvido por Miguel Afonso Castro de Almeida -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -177,14 +178,23 @@
             async function deleteInstitution(id) {
                 try {
                     const res = await fetch(`${API_URL}/${id}/user/${userId}`, {
-                        method: 'DELETE',
+                    method: 'DELETE',
                     });
-                    if (!res.ok) throw new Error('Erro ao excluir instituição');
+                    if (!res.ok) {
+                    let errorMsg = 'Erro ao excluir instituição.';
+                    try {
+                        const errorJson = await res.json();
+                        if (errorJson.message) errorMsg = errorJson.message;
+                    } catch {
+                        const errorText = await res.text();
+                        if (errorText) errorMsg = errorText;
+                    }
+                    throw new Error(errorMsg);
+                    }
                     institutions = institutions.filter(inst => inst.id !== id);
                     renderAll();
                 } catch (err) {
-                    console.error(err);
-                    alert('Erro ao excluir instituição.');
+                    alert('Erro ao excluir disciplina. ' + err.message);
                 }
             }
 

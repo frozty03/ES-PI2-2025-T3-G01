@@ -1,3 +1,4 @@
+// Desenvolvido por Miguel Afonso Castro de Almeida
 import { Controller, Put, Delete, Param, Body } from '@nestjs/common';
 import { ComponenteNotaService } from './componente-nota.service';
 import { AtualizarComponenteNotaDTO } from './dto/atualizar-componente-nota.dto';

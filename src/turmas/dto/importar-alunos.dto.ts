@@ -1,3 +1,4 @@
+// Desenvolvido por Miguel Afonso Castro de Almeida
 import { IsArray, IsNotEmpty, IsUUID } from 'class-validator';
 
 export class ImportarAlunosDTO {

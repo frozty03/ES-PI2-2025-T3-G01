@@ -1,3 +1,4 @@
+// Desenvolvido por Miguel Afonso Castro de Almeida
 import { IsOptional, IsString, IsNumber, Length } from "class-validator";
 
 export class AtualizarComponenteNotaDTO {

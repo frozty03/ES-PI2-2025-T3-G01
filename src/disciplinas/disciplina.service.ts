@@ -5,7 +5,8 @@ import { In, Repository } from "typeorm";
 import { CursoEntity } from "src/cursos/curso.entity";
 import { CriarDisciplinaDTO } from "./dto/criar-disciplina.dto";
 import { AtualizarDisciplinaDTO } from "./dto/atualizar-discplina.dto";
-import { ComponenteNotaService } from "./componente-nota.service"
+import { ComponenteNotaService } from "./componente-nota.service";
+import { TurmaService } from '../turmas/turma.service';
 
 @Injectable()
 export class DisciplinaService {
@@ -15,7 +16,8 @@ export class DisciplinaService {
 
         @InjectRepository(CursoEntity)
         private readonly cursoRepository: Repository<CursoEntity>,
-    private readonly componenteNotaService: ComponenteNotaService,
+        private readonly componenteNotaService: ComponenteNotaService,
+        private readonly turmaService: TurmaService //
     ) {}
 
     async criarDisciplina(criarDisciplinaDTO: CriarDisciplinaDTO, userId: string): Promise<DisciplinasEntity> {// "prometendo" a entrega assincrona de um valor resultante DisciplinasEntity
@@ -147,8 +149,14 @@ export class DisciplinaService {
         return await this.disciplinaRepository.save(disciplina);
     }
 
+
     async deletar(id: string, userId: string): Promise<{ message: string }> {
         const disciplina = await this.buscarDisciplinaId(id, userId);
+
+        const turmasVinculadas = await this.turmaService.listarPorDisciplina(id, userId);
+        if (turmasVinculadas.length > 0) {
+            throw new ConflictException("Não é possível excluir a disciplina: há turmas vinculadas.");
+        }
 
         await this.componenteNotaService.deletarPorDisciplinaId(disciplina.id); // precisa deleter os componenentes antes pq o banco de dados n tá com delete on cascade (até melhor pra ter um conrole melhor do que tá acontecendo)
         await this.disciplinaRepository.remove(disciplina);

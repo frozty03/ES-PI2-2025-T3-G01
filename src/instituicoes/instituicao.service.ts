@@ -2,6 +2,7 @@ import {
   Injectable,
   UnauthorizedException,
   NotFoundException,
+  ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -9,6 +10,7 @@ import { InstituicaoEntity } from './instituicao.entity';
 import { CreateInstituicaoDto } from './criarInstituicao.dto';
 import { ListInstituicoesByUserDto } from './list-instituicoes-by-user.dto';
 import { UserEntity } from '../users/user.entity';
+import { CursoEntity } from '../cursos/curso.entity';
 
 @Injectable()
 export class InstituicaoService {
@@ -17,6 +19,8 @@ export class InstituicaoService {
     private readonly instituicaoRepository: Repository<InstituicaoEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(CursoEntity)
+    private readonly cursoRepository: Repository<CursoEntity>
   ) {}
 
   // criar instituição e associar obrigatoriamente a um usuário (userId do usuário logado)
@@ -71,6 +75,16 @@ export class InstituicaoService {
       throw new UnauthorizedException(
         'Usuário não autorizado a deletar esta instituição',
       );
+    }
+
+    const cursosVinculados = await this.cursoRepository
+    .createQueryBuilder('curso')
+    .innerJoin('curso.instituicoes', 'instituicao')
+    .where('instituicao.id = :id', { id: instituicaoId })
+    .getCount();
+
+    if (cursosVinculados > 0) {
+      throw new ConflictException('Não é possível excluir a instituição: existem cursos vinculados.');
     }
 
     await this.instituicaoRepository.delete(instituicaoId);

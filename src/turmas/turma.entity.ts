@@ -1,3 +1,4 @@
+// Desenvolvido por Miguel Afonso Castro de Almeida
 import { Entity, Column,JoinTable, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, PrimaryGeneratedColumn, ManyToMany } from "typeorm";
 import { DisciplinasEntity } from "src/disciplinas/disciplinas.entity";
 import { AlunoEntity } from "src/alunos/aluno.entity";

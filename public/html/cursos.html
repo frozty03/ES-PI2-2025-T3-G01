@@ -1,3 +1,4 @@
+<!-- Desenvolvido por Miguel Afonso Castro de Almeida -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -184,17 +185,24 @@
         async function deleteCourse(courseId) {
             try {
                 const res = await fetch(`${API_BASE}/cursos/${courseId}/user/${userId}`, {
-                    method: 'DELETE'
+                method: 'DELETE'
                 });
                 if (!res.ok) {
+                let errorMsg = 'Erro ao excluir curso.';
+                try {
+                    const errorJson = await res.json();
+                    if (errorJson.message) errorMsg = errorJson.message;
+                } catch {
                     const errorText = await res.text();
-                    throw new Error(errorText);
+                    if (errorText) errorMsg = errorText;
+                }
+                throw new Error(errorMsg);
                 }
                 await fetchCoursesAndRenderGrid();
             } catch (err) {
-                alert('Erro ao excluir curso:\n' + err.message);
+                alert(err.message);
             }
-        }
+            }
 
         function showModal(modal) {
             modal.style.display = 'flex';

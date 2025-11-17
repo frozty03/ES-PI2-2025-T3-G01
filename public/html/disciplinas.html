@@ -239,12 +239,26 @@
         async function deleteDiscipline(disciplineId) {
             try {
                 const res = await fetch(`${API_BASE}/disciplinas/${disciplineId}/user/${userId}`, { method: 'DELETE' });
-                if (!res.ok) throw new Error('Erro ao excluir disciplina');
+                if (!res.ok) {
+                // tenta ler erro em json
+                let errorMsg = 'Erro ao excluir disciplina';
+                try {
+                    const errorJson = await res.json();
+                    if (errorJson && errorJson.message) errorMsg = errorJson.message;
+                } catch {
+                    // se não funcionar, tenta como texto msm
+                    const errorText = await res.text();
+                    if (errorText) errorMsg = errorText;
+                }
+                throw new Error(errorMsg);
+                }
                 await fetchDisciplinesAndRenderGrid();
             } catch (err) {
-                alert('Erro ao excluir disciplina.');
+                alert('Erro ao excluir disciplina. ' + err.message);
             }
         }
+
+        
 
         function showModal(modal) {
             modal.style.display = 'flex';

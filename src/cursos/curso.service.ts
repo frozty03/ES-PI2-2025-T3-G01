@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { CursoEntity } from './curso.entity';
 import { InstituicaoEntity } from '../instituicoes/instituicao.entity';
 import { CriarCursoDto } from './criar-curso.dto';
 import { ListarCursoDto } from './listar-curso.dto';
+import { DisciplinasEntity } from "../disciplinas/disciplinas.entity";
 
 @Injectable()
 export class CursoService {
@@ -13,6 +14,8 @@ export class CursoService {
     private readonly cursoRepository: Repository<CursoEntity>,
     @InjectRepository(InstituicaoEntity)
     private readonly instituicaoRepository: Repository<InstituicaoEntity>,
+    @InjectRepository(DisciplinasEntity)
+  private readonly disciplinaRepository: Repository<DisciplinasEntity>
   ) {}
 
   async criarCurso(dto: CriarCursoDto, userId: string): Promise<ListarCursoDto> {
@@ -82,6 +85,16 @@ export class CursoService {
 
     if (!curso) {
       throw new NotFoundException('Curso não encontrado');
+    }
+
+    const disciplinasVinculadas = await this.disciplinaRepository
+    .createQueryBuilder('disciplina')
+    .innerJoin('disciplina.cursos', 'curso')
+    .where('curso.id = :id', { id })
+    .getCount();
+
+    if (disciplinasVinculadas > 0) {
+      throw new ConflictException('Não é possível excluir o curso: existem disciplinas vinculadas.');
     }
     await this.cursoRepository.remove(curso);
   }

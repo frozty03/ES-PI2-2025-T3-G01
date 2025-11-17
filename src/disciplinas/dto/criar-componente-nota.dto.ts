@@ -1,3 +1,4 @@
+// Desenvolvido por Miguel Afonso Castro de Almeida
 import { IsNotEmpty, IsNumber, IsUUID, Length } from 'class-validator';
 
 export class CriarComponenteNotaDTO {
