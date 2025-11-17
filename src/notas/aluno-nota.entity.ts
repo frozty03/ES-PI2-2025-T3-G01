@@ -3,7 +3,7 @@ import { AlunoEntity } from 'src/alunos/aluno.entity';
 import { ComponenteNotaEntity } from 'src/disciplinas/componente-nota.entity';
 import { TurmaEntity } from 'src/turmas/turma.entity';
 
-@Entity({ name: 'Aluno_Nota' })
+@Entity({ name: 'Notas_Aluno_Turma_Componente' })
 @Unique(['aluno', 'componenteNota', 'turma'])
 export class AlunoNotaEntity {
   @PrimaryGeneratedColumn('uuid')

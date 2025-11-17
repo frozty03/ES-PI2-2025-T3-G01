@@ -26,6 +26,13 @@ export class NotasController {
     };
   }
 
+    @Get('turma/:turmaId/disciplina/:disciplinaId')
+    async listarNotasTurmaDisciplina(
+    @Param('turmaId') turmaId: string,
+    @Param('disciplinaId') disciplinaId: string,) {
+      return await this.notasService.listarNotasTurmaDisciplina(turmaId, disciplinaId);
+    }
+
   @Get('validar/:turmaId/disciplina/:disciplinaId')
   async validarNotas(
     @Param('turmaId') turmaId: string,

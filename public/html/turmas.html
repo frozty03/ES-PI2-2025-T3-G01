@@ -212,6 +212,18 @@
                     document.getElementById('delete-confirm-modal').dataset.id = turmaId;
                     document.getElementById('delete-confirm-modal').style.display = 'flex';
                 }
+
+                if (e.target.classList.contains('options-btn') ||
+                    e.target.classList.contains('delete-btn') ||
+                    e.target.classList.contains('edit-btn')
+                ) {
+                    return;
+                }
+                const card = e.target.closest('.turma-card');
+                if (card) {
+                    const turmaId = card.dataset.id;
+                    window.location.href = `/html/notas.html?turma_id=${turmaId}&disciplina_id=${disciplinaId}`;
+                }
             });
 
             document.getElementById('cancel-delete-btn').addEventListener('click', () => {

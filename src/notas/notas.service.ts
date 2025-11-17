@@ -14,11 +14,13 @@ import { LancarNotaDTO } from './dto/lancar-nota.dto';
 import * as fs from 'fs';
 import * as path from 'path';
 
-interface AlunoComNotas {
+export interface AlunoComNotas {
+  id: string;
   ra: string;
   nome: string;
   notas: { [componenteSigla: string]: number | null };
 }
+
 
 @Injectable()
 export class NotasService {
@@ -181,6 +183,7 @@ export class NotasService {
 
     for (const aluno of turma.alunos) {
       const registro: AlunoComNotas = {
+        id: aluno.id,
         ra: aluno.ra,
         nome: aluno.nome,
         notas: {},
@@ -255,6 +258,57 @@ export class NotasService {
     }
 
     return fs.readFileSync(filePath);
+  }
+
+  // criando outra função para criar a tabela de notas
+  async listarNotasTurmaDisciplina(
+    turmaId: string,
+    disciplinaId: string
+  ): Promise<{
+    alunos: AlunoComNotas[],
+    componentes: Array<{ id: string, sigla: string, nome: string, peso: number }>
+  }> {
+    const turma = await this.turmaRepository.findOne({
+      where: { id: turmaId },
+      relations: ['alunos'],
+    });
+    if (!turma) throw new NotFoundException('Turma não encontrada');
+
+    const componentes = await this.componenteNotaRepository.find({
+      where: { disciplina: { id: disciplinaId } },
+      order: { sigla: 'ASC' }
+    });
+
+    const alunosComNotas: AlunoComNotas[] = [];
+    for (const aluno of turma.alunos) {
+      const registro: AlunoComNotas = {
+        id: aluno.id,
+        ra: aluno.ra,
+        nome: aluno.nome,
+        notas: {}
+      };
+      for (const componente of componentes) {
+        const nota = await this.alunoNotaRepository.findOne({
+          where: {
+            aluno: { id: aluno.id },
+            componenteNota: { id: componente.id },
+            turma: { id: turmaId }
+          }
+        });
+        registro.notas[componente.sigla] = nota?.valor ?? null;
+      }
+      alunosComNotas.push(registro);
+    }
+
+    return {
+      alunos: alunosComNotas,
+      componentes: componentes.map(c => ({
+        id: c.id,
+        sigla: c.sigla,
+        nome: c.nome,
+        peso: c.peso
+      }))
+    };
   }
 
   deletarArquivoTemporario(fileName: string): void {
