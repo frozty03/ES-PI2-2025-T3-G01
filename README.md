@@ -25,6 +25,7 @@ Aplicação web para gerenciamento de instituições, turmas, disciplinas, aluno
 
 - *Docker* instalado
 - *Docker Compose* instalado
+- *Docker Desktop* instalado
 
 ### Iniciar BD com Docker
 
@@ -63,7 +64,7 @@ bash
 npm run start:dev
 
 
-A aplicação estará disponível em: *http://localhost:3000*
+A aplicação estará disponível em: *http://localhost:3000/usuarios/login*
 
 
 *Versão:* 1.0.0
