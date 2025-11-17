@@ -1,3 +1,5 @@
+// Feito por: Lucas Presende e Davi Froza
+
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { CursoService } from './curso.service';
 import { CriarCursoDto } from './criar-curso.dto';

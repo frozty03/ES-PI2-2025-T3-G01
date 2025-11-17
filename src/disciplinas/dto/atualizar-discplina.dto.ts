@@ -1,3 +1,5 @@
+// Feito por:  Davi Froza
+
 import { IsArray, IsNumber, IsOptional, IsString, IsUUID, Length } from "class-validator";
 
 

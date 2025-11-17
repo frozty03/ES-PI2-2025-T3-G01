@@ -23,31 +23,42 @@ export class TurmaService {
 
   // criar turma
   async createTurma(turmaCreateDto: CreateTurmaDto, userId: string,): Promise<TurmaEntity> {
-        const codigoExiste = await this.turmaRepository.findOne({
-            where: { cod: turmaCreateDto.cod },
-        });
+        for (const disciplinaId of turmaCreateDto.disciplinasIds) {
+        const turmaExistente = await this.turmaRepository
+            .createQueryBuilder('turma')
+            .innerJoin('turma.disciplinas', 'disciplina')
+            .where('turma.cod = :cod', { cod: turmaCreateDto.cod })
+            .andWhere('disciplina.id = :disciplinaId', { disciplinaId })
+            .getOne();
 
-        if (codigoExiste) {
-            throw new ConflictException('Turma já cadastrada');
+        if (turmaExistente) {
+            const disciplina = await this.disciplinaRepository.findOne({
+                where: { id: disciplinaId }
+            });
+            
+            throw new ConflictException(
+                `Já existe uma turma com código ${turmaCreateDto.cod} na disciplina "${disciplina?.nome || disciplinaId}"`
+            );
         }
+    }
 
-        const disciplina = await this.disciplinaRepository
-            .createQueryBuilder('disciplina')
-            .innerJoin('disciplina.cursos', 'curso')
-            .innerJoin('curso.instituicoes', 'instituicao')
-            .innerJoin('instituicao.users', 'user')
-            .where('disciplina.id IN (:...ids)', { ids: turmaCreateDto.disciplinasIds })
-            .andWhere('user.id = :userId', { userId })
-            .getMany();
+        const disciplinasDoUsuario = await this.disciplinaRepository
+          .createQueryBuilder('disciplina')
+          .innerJoin('disciplina.cursos', 'curso')
+          .innerJoin('curso.instituicoes', 'instituicao')
+          .innerJoin('instituicao.users', 'user')
+          .where('disciplina.id IN (:...ids)', { ids: turmaCreateDto.disciplinasIds })
+          .andWhere('user.id = :userId', { userId })
+          .getMany();
 
-        if (disciplina.length !== turmaCreateDto.disciplinasIds.length) {
+        if (disciplinasDoUsuario.length !== turmaCreateDto.disciplinasIds.length) {
             throw new NotFoundException('Uma ou mais disciplinas informados nao foram encontradsos');
         }
 
         // criando a turma
         const turma = this.turmaRepository.create({
             cod: turmaCreateDto.cod,
-            disciplinas: disciplina
+            disciplinas: disciplinasDoUsuario
         });
 
         return await this.turmaRepository.save(turma); 

@@ -1,7 +1,9 @@
+// Feito por: Davi Froza 
+
 import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { AlunoEntity } from "./aluno.entity";
-import { Repository } from "typeorm";
+import { In, Repository } from "typeorm";
 import { TurmaEntity } from "src/turmas/turma.entity";
 import { CriarAlunoDTO } from "./dto/criar-aluno.dto";
 import { AtualizarAlunoDTO } from "./dto/atualizar-aluno.dto";
@@ -19,14 +21,10 @@ export class AlunoService {
     ) {}
 
     async cadastrarAluno(criarAlunoDTO: CriarAlunoDTO, userId: string): Promise<AlunoEntity> {
-        const raExiste = await this.alunoRepository.findOne({
-            where: { ra: criarAlunoDTO.ra }
+        let aluno = await this.alunoRepository.findOne({
+            where: { ra: criarAlunoDTO.ra },
+            relations: ['turmas'] 
         });
-
-        if (raExiste) {
-            throw new ConflictException('Ja existe aluno cadastrado com esse RA!')
-        }
-
         const turmas = await this.turmaRepository
             .createQueryBuilder('turma')
             .innerJoin('turma.disciplinas', 'disciplina')
@@ -41,7 +39,20 @@ export class AlunoService {
             throw new NotFoundException('Uma ou mais turmas informadas nao foram encontradas');
         }
 
-        const aluno = await this.alunoRepository.create({
+        if (aluno) {
+            const turmasAtuaisIds = aluno.turmas.map(t => t.id);
+            const novasTurmas = turmas.filter(t => !turmasAtuaisIds.includes(t.id));
+
+            if (novasTurmas.length === 0) {
+                throw new ConflictException('Aluno já está cadastrado nessa turma');
+            }
+
+            aluno.turmas = [...aluno.turmas, ...novasTurmas];
+
+            return await this.alunoRepository.save(aluno);
+        }
+        
+        aluno = this.alunoRepository.create({
             ra: criarAlunoDTO.ra,
             nome: criarAlunoDTO.nome,
             turmas: turmas
@@ -93,12 +104,46 @@ export class AlunoService {
             return aluno;
         }
 
-    async deletarAluno(id: string, userId:string): Promise<{ message: string }> {
-        const aluno = await this.buscarAlunoId(id, userId);
+    async deletarAluno(id: string, userId:string, turmaId: string): Promise<{ message: string }> {
+        const aluno = await this.alunoRepository.findOne({
+            where: { id },
+            relations: ['turmas']
+        });
 
-        await this.alunoRepository.remove(aluno);
+        if (!aluno) {
+            throw new NotFoundException('Aluno não encontrado');
+        }
 
-        return { message: 'Aluno excluido com sucesso!' };
+        const turma = await this.turmaRepository
+            .createQueryBuilder('turma')
+            .innerJoin('turma.disciplinas', 'disciplina')
+            .innerJoin('disciplina.cursos', 'curso')
+            .innerJoin('curso.instituicoes', 'instituicao')
+            .innerJoin('instituicao.users', 'user')
+            .where('turma.id = :turmaId', { turmaId })
+            .andWhere('user.id = :userId', { userId })
+            .getOne();
+
+        if (!turma) {
+            throw new UnauthorizedException('Turma não encontrada');
+        }
+
+        const alunoEstaNaTurma = aluno.turmas.some(t => t.id === turmaId);
+
+        if (!alunoEstaNaTurma) { // apenas para teste no postman
+            throw new NotFoundException('Aluno não está cadastrado nesta turma');
+        }
+
+        aluno.turmas = aluno.turmas.filter(t => t.id !== turmaId); // deletar apenas uma turma, obedecer a relacao many to amny
+
+        if (aluno.turmas.length === 0) {
+            await this.alunoRepository.remove(aluno);
+            return { message: 'Aluno removido' };
+        }
+
+        await this.alunoRepository.save(aluno); // salvar sem aquela turma
+
+        return { message: 'Aluno excluido dessa turma com sucesso!' };
     }
 
     async atualizarAluno(atualizarAlunoDTO: AtualizarAlunoDTO, id: string, userId: string): Promise<AlunoEntity> {
@@ -140,26 +185,47 @@ export class AlunoService {
         return await this.alunoRepository.save(aluno);
     }
 
-    async deletarLote(userId: string, deletarLoteAlunoDTO: DeletarLoteAlunoDTO) { // para deletar varios simultaneamente RF023 (se n me engano)
-        const alunos = await this.alunoRepository
-            .createQueryBuilder('aluno')
-            .innerJoin('aluno.turmas', 'turma')
+    async deletarLote(userId: string, turmaId: string, deletarLoteAlunoDTO: DeletarLoteAlunoDTO) { // para deletar varios simultaneamente RF023 (se n me engano)
+        const turma = await this.turmaRepository
+            .createQueryBuilder('turma')
             .innerJoin('turma.disciplinas', 'disciplina')
             .innerJoin('disciplina.cursos', 'curso')
             .innerJoin('curso.instituicoes', 'instituicao')
             .innerJoin('instituicao.users', 'user')
-            .where('aluno.id IN (:...ids)', { ids: deletarLoteAlunoDTO.alunosIds })
+            .where('turma.id = :turmaId', { turmaId })
             .andWhere('user.id = :userId', { userId })
-            .getMany();
+            .getOne();
 
-        if (alunos.length !== deletarLoteAlunoDTO.alunosIds.length) {
-            throw new UnauthorizedException('Um ou mais alunos não pertencem a você');
+        if (!turma) {
+            throw new UnauthorizedException('Turma não encontrada');
         }
 
-        await this.alunoRepository.remove(alunos);
+        const alunos = await this.alunoRepository.find({
+        where: { id: In(deletarLoteAlunoDTO.alunosIds) },
+        relations: ['turmas']
+        });
+
+        if (alunos.length !== deletarLoteAlunoDTO.alunosIds.length) {
+            throw new NotFoundException('Um ou mais alunos não foram encontrados');
+        }
+
+        let removidosCompletamente = 0;
+        let removidosDaTurma = 0;
+
+        for (const aluno of alunos) {
+        aluno.turmas = aluno.turmas.filter(t => t.id !== turmaId); // tirar apenas da turma especificadw
+
+        if (aluno.turmas.length === 0) {
+            await this.alunoRepository.remove(aluno);
+            removidosCompletamente++;
+        } else {
+            await this.alunoRepository.save(aluno);
+            removidosDaTurma++;
+        }
+    }
 
         return { 
-            message: `${alunos.length} aluno(s) deletado(s) com sucesso` 
+            message: `${removidosCompletamente} aluno(s) removido(s) completamente. ${removidosDaTurma} aluno(s) removido(s) apenas desta turma.`
         };
     }
 }

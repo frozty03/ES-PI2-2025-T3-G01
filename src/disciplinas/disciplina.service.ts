@@ -1,3 +1,6 @@
+// Feito por:  Davi Froza
+
+
 import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DisciplinasEntity } from "./disciplinas.entity";
