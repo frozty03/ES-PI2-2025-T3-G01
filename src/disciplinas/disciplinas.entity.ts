@@ -1,4 +1,6 @@
-// Desenvolvido por Davi Alves Froza
+// Feito por:  Davi Froza
+
+
 import { CursoEntity } from "src/cursos/curso.entity";
 import { Column, Entity, JoinTable, ManyToMany,OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { TurmaEntity } from "src/turmas/turma.entity";

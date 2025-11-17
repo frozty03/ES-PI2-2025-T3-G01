@@ -1,3 +1,6 @@
+// Feito por: Davi Froza
+
+
 import { Entity, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, PrimaryGeneratedColumn, BeforeInsert } from "typeorm";
 import * as bcrypt from 'bcrypt';
 

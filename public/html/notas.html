@@ -1,8 +1,9 @@
-<!-- Desenvolvido por Miguel Afonso Castro de Almeida -->
+<!-- feito por Miguel Afonso e Davi Froza -->
+
 <!DOCTYPE html>
 <html lang="pt-br">
     <head>
-        <meta charset="UTF-8">
+        <meta charset="UTF-R">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Notas da Turma</title>
         <link rel="stylesheet" href="../assets/css/styleNotas.css">
@@ -12,7 +13,175 @@
             .tabela-notas th { background: #3338A0; color: #fff; font-weight: 600; }
             .tabela-notas td input[type='number'] { width: 65px; text-align: right; border-radius: 5px; border: 1px solid #b0b3c1; }
             .media-final { font-weight: bold; }
-            .header-actions { display: flex; align-items: center; gap: 2rem; }
+            .header-actions { display: flex; align-items: center; gap: 1rem; } 
+
+            .tooltip-container {
+                position: relative;
+                display: inline-block;
+                cursor: help;
+                margin-left: -5px; 
+            }
+            .help-icon {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 20px;
+                height: 20px;
+                background-color: #6c757d;
+                color: white;
+                border-radius: 50%;
+                font-weight: bold;
+                font-size: 14px;
+                user-select: none;
+            }
+            .tooltip-container .tooltip-content {
+                visibility: hidden;
+                width: 320px; 
+                background-color: #333;
+                color: #fff;
+                text-align: left;
+                border-radius: 6px;
+                padding: 10px 15px;
+                position: absolute;
+                z-index: 10;
+                top: 100%; 
+                left: 50%;
+                margin-left: -275px; 
+                opacity: 0;
+                transition: opacity 0.3s;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            }
+            .tooltip-container:hover .tooltip-content {
+                visibility: visible;
+                opacity: 1;
+            }
+            .tooltip-content h3 {
+                margin-top: 10px;
+                margin-bottom: 5px;
+                color: #FCC61D; 
+                border-bottom: 1px solid #555;
+                padding-bottom: 5px;
+            }
+            .tooltip-content pre {
+                background: #444;
+                padding: 10px;
+                border-radius: 4px;
+                font-size: 0.9em;
+                white-space: pre-wrap; 
+            }
+            .tooltip-content ul {
+                padding-left: 20px;
+                margin: 0;
+                font-size: 0.9em;
+            }
+            .tooltip-content li { margin-bottom: 5px; }
+            .tooltip-content code {
+                background: #555;
+                padding: 2px 4px;
+                border-radius: 3px;
+                font-family: monospace;
+            }
+
+            /* selecionar todos */
+            #checkbox-select-all {
+                cursor: pointer;
+            }
+
+            /* cada aluno */
+            .checkbox-aluno {
+                cursor: pointer;
+                width: 18px;
+                height: 18px;
+            }
+
+            /* deletar individual */
+            .btn-deletar-individual {
+                background-color: #d9534f;
+                color: white;
+                border: none;
+                padding: 5px 10px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 0.9em;
+            }
+
+            .btn-deletar-individual:hover {
+                background-color: #c9302c;
+            }
+
+            /* deletar em lote */
+            .btn-deletar {
+                padding: 10px 20px;
+                border: none;
+                border-radius: 8px;
+                color: white;
+                cursor: pointer;
+                font-weight: 600;
+                transition: all 0.3s;
+            }
+
+            .btn-deletar:hover {
+                background-color: #c9302c;
+                transform: translateY(-2px);
+            }
+
+            .btn-importar {
+                background-color: #FCC61D;
+                color: #3338A0;
+                border: none;
+                padding: 0.8rem 1.5rem;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: bold;
+                font-size: 1rem;
+                transition: background-color 0.3s;
+            }
+
+            .btn-importar:hover {
+                background-color: #eab518;
+            }
+
+            .btn-exportar {
+                background-color: #FCC61D;
+                color: #3338A0;
+                border: none;
+                padding: 0.8rem 1.5rem;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: bold;
+                font-size: 1rem;
+                transition: background-color 0.3s;
+            }
+
+            .btn-exportar:hover {
+                background-color: #eab518;
+            }
+
+            .btn-exportar:disabled {
+                background-color: #ccc;
+                cursor: not-allowed;
+                transform: none;
+            }
+
+            .btn-voltar {
+                background-color: #FCC61D; 
+                color: #3338A0; 
+                border: none;
+                padding: 0.4rem 1rem;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: bold;
+                font-size: 1rem;
+                transition: all 0.3s ease;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .btn-voltar:hover {
+                background-color: #eab518; 
+            }
+
         </style>
     </head>
     <body>
@@ -34,23 +203,56 @@
         <main class="main-content">
         <div class="content-card">
             <header class="content-header header-actions">
+            <button id="btn-voltar" class="btn-voltar">Voltar</button>
             <label>
                 <input type="checkbox" id="media-ponderada-checkbox" checked>
                 Média ponderada
             </label>
             <button id="open-add-modal-btn" class="btn-cadastrar">Cadastrar aluno</button>
+
+            <button id="exportar-notas-btn" class="btn-exportar">Exportar Notas</button>
+
+            <button id="open-import-modal-btn" class="btn-cadastrar">Importar CSV</button>
+            
+            <button id="deletar-selecionados-btn" class="btn-deletar" style="background-color: #d9534f; display: none;">
+                Deletar Selecionados
+            </button>
+
+            <div class="tooltip-container">
+                <span class="help-icon">?</span>
+                <div class="tooltip-content">
+                    <h3>Estrutura</h3>
+                    <pre>Matrícula,Nome <br>11111,Abel Antimônio<br>11112,Bianca Nióbio<br>11113,Carla Polônio<br>11114,Carlos Zinco<br>11115,Leonardo Plutônio<br>11116,Matheus Basalto
+                    </pre>
+                    <h3>Especificações</h3>
+                    <ul>
+                        <li><b>Cabeçalho</b>: A primeira linha deve conter os nomes das colunas (<code>Matrícula</code>, <code>Nome</code>, etc.)</li>
+                        <li><b>Coluna 1 (Matrícula/RA)</b>: Identificador único do aluno (até 8 caracteres numéricos)</li>
+                        <li><b>Coluna 2 (Nome)</b>: Nome completo do estudante (até 150 caracteres)</li>
+                        <li><b>Colunas adicionais</b>: Qualquer coluna além da segunda é ignorada automaticamente</li>
+                    </ul>
+                </div>
+            </div>
+
             </header>
 
             <div style="overflow-x:auto;">
                 <table id="tabela-notas" class="tabela-notas">
                     <thead>
                         <tr id="thead-notas">
+<<<<<<< HEAD
                             <!-- cabeçalho -->
                         </tr>
                     </thead>
                     <tbody id="tbody-notas">
                         <!-- corpo -->
                     </tbody>
+=======
+                            </tr>
+                    </thead>
+                    <tbody id="tbody-notas">
+                        </tbody>
+>>>>>>> feat/frontNotas
                 </table>
             </div>
         </div>
@@ -78,38 +280,94 @@
         </div>
     </div>
     
+    <div id="import-csv-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-import-modal-btn">&times;</span>
+            <h2>Importar Alunos por CSV</h2>
+            <form id="import-csv-form" enctype="multipart/form-data">
+                <div class="input-box">
+                    <label for="csv-file">Selecione o arquivo CSV:</label>
+                    <input type="file" id="csv-file" name="arquivo" accept=".csv" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" id="cancel-import-btn">Cancelar</button>
+                    <button type="submit" class="btn-confirm">Importar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         const API_BASE = 'http://localhost:3000';
         const userId = localStorage.getItem('user_id');
         let turmaId = '';
         let disciplinaId = '';
 
+        const importModal = document.getElementById('import-csv-modal');
+        const importForm = document.getElementById('import-csv-form');
+        const addAlunoModal = document.getElementById('add-aluno-modal');
+
         document.getElementById('user-name').textContent = localStorage.getItem('user_nome') || 'Visitante';
+
+        document.getElementById('btn-voltar').addEventListener('click', () => {
+            const params = new URLSearchParams(window.location.search);
+            const instId = params.get('inst_id');
+            const cursoId = params.get('curso_id');
+            const disciplinaId = params.get('disciplina_id');
+            
+            if (!instId || !cursoId || !disciplinaId) {
+                console.error('Parâmetros faltando na URL');
+                window.history.back(); 
+                return;
+            }
+            
+            window.location.href = `/html/turmas.html?inst_id=${instId}&curso_id=${cursoId}&disciplina_id=${disciplinaId}`;
+        });
 
         async function loadNotasInterface() {
             const params = new URLSearchParams(window.location.search);
             turmaId = params.get('turma_id');
             disciplinaId = params.get('disciplina_id');
-            const { alunos, componentes } = await fetch(
-                `${API_BASE}/notas/turma/${turmaId}/disciplina/${disciplinaId}`
-            ).then(r => r.json());
+            
+            if (!turmaId || !disciplinaId) {
+                alert('ID da turma ou disciplina não encontrado na URL.');
+                return;
+            }
 
-            document.getElementById('thead-notas').innerHTML = renderTableHead(componentes);
-            document.getElementById('tbody-notas').innerHTML = renderTableBody(alunos, componentes, document.getElementById('media-ponderada-checkbox').checked);
+            try {
+                const resp = await fetch(
+                    `${API_BASE}/notas/turma/${turmaId}/disciplina/${disciplinaId}`
+                );
+                if (!resp.ok) throw new Error('Erro ao carregar dados da turma.');
+                
+                const { alunos, componentes } = await resp.json();
+
+                document.getElementById('thead-notas').innerHTML = renderTableHead(componentes);
+                document.getElementById('tbody-notas').innerHTML = renderTableBody(alunos, componentes, document.getElementById('media-ponderada-checkbox').checked);
+            } catch (err) {
+                console.error(err);
+                document.getElementById('tbody-notas').innerHTML = `<tr><td colspan="99" style="text-align:center; color:red;">${err.message}</td></tr>`;
+            }
         }
 
         function renderTableHead(componentes) {
             return `
                 <tr>
+                    <th><input type="checkbox" id="checkbox-select-all"></th>
                     <th>Nome</th>
                     <th>RA</th>
                     ${componentes.map(c => `<th>${c.sigla}</th>`).join('')}
                     <th>Média final</th>
+                    <th>Ações</th>
                 </tr>
             `;
         }
 
         function renderTableBody(alunos, componentes, ponderada) {
+            if (!alunos || alunos.length === 0) {
+                return `<tr><td colspan="99" style="text-align:center;">Nenhum aluno cadastrado nesta turma.</td></tr>`;
+            }
+            
             return alunos.map(aluno => {
                 let medias = [];
                 let celulas = componentes.map(comp => {
@@ -127,14 +385,118 @@
                 const media = calcularMedia(medias, ponderada);
                 return `
                     <tr>
+                        <td><input type="checkbox" class="checkbox-aluno" data-aluno-id="${aluno.id}"></td>
                         <td>${aluno.nome}</td>
                         <td>${aluno.ra}</td>
                         ${celulas.join('')}
                         <td><span class="media-final">${media}</span></td>
+                        <td><button class="btn-deletar-individual" data-aluno-id="${aluno.id}" data-aluno-nome="${aluno.nome}">Deletar</button></td>
                     </tr>
                 `;
             }).join('');
         }
+
+        document.addEventListener('change', (e) => {
+            if (e.target.id === 'checkbox-select-all') {
+                const checkboxes = document.querySelectorAll('.checkbox-aluno');
+                checkboxes.forEach(cb => cb.checked = e.target.checked);
+                atualizarBotaoDeletarLote();
+            }
+            
+            if (e.target.classList.contains('checkbox-aluno')) {
+                atualizarBotaoDeletarLote();
+            }
+        });
+
+        function atualizarBotaoDeletarLote() {
+            const checkboxesMarcados = document.querySelectorAll('.checkbox-aluno:checked');
+            const btnDeletarLote = document.getElementById('deletar-selecionados-btn');
+            
+            if (checkboxesMarcados.length > 0) {
+                btnDeletarLote.style.display = 'inline-block';
+                btnDeletarLote.textContent = `Deletar Selecionados (${checkboxesMarcados.length})`;
+            } else {
+                btnDeletarLote.style.display = 'none';
+            }
+        }
+
+        document.addEventListener('click', async (e) => {
+            if (e.target.classList.contains('btn-deletar-individual')) {
+                const alunoId = e.target.dataset.alunoId;
+                const alunoNome = e.target.dataset.alunoNome;
+                
+                if (!confirm(`Tem certeza que deseja deletar o aluno "${alunoNome}"?`)) {
+                    return;
+                }
+                
+                try {
+                    const resp = await fetch(`${API_BASE}/alunos/${alunoId}/turma/${turmaId}/user/${userId}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (!resp.ok) {
+                        const data = await resp.json();
+                        throw new Error(data.message || 'Erro ao deletar aluno!');
+                    }
+                    
+                    alert('Aluno deletado com sucesso!');
+                    desmarcarTodosCheckboxes();
+                    loadNotasInterface(); // recarregar tabela
+                    
+                } catch (err) {
+                    alert(`Erro: ${err.message}`);
+                }
+            }
+        });
+
+        document.getElementById('deletar-selecionados-btn').addEventListener('click', async () => {
+            const checkboxesMarcados = document.querySelectorAll('.checkbox-aluno:checked');
+            
+            if (checkboxesMarcados.length === 0) {
+                alert('Selecione pelo menos um aluno para deletar.');
+                return;
+            }
+            
+            const alunosIds = Array.from(checkboxesMarcados).map(cb => cb.dataset.alunoId);
+            
+            if (!confirm(`Tem certeza que deseja deletar ${alunosIds.length} aluno(s)?`)) {
+                return;
+            }
+            
+            try {
+                const resp = await fetch(`${API_BASE}/alunos/lote/turma/${turmaId}/user/${userId}`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ alunosIds })
+                });
+                
+                if (!resp.ok) {
+                    const data = await resp.json();
+                    throw new Error(data.message || 'Erro ao deletar alunos!');
+                }
+                
+                const result = await resp.json();
+                alert(result.message || 'Alunos deletados com sucesso!');
+                desmarcarTodosCheckboxes();
+                loadNotasInterface(); 
+                
+            } catch (err) {
+                alert(`Erro: ${err.message}`);
+            }
+        });
+
+        function desmarcarTodosCheckboxes() {
+            const checkboxSelectAll = document.getElementById('checkbox-select-all');
+            if (checkboxSelectAll) {
+                checkboxSelectAll.checked = false;
+            }
+            
+            const checkboxesAlunos = document.querySelectorAll('.checkbox-aluno');
+            checkboxesAlunos.forEach(cb => cb.checked = false);
+            
+            atualizarBotaoDeletarLote();
+        }
+
 
         function calcularMedia(medias, ponderada) {
             if (!medias.length) return '-';
@@ -154,13 +516,13 @@
         });
 
         document.getElementById('open-add-modal-btn').addEventListener('click', () => {
-            document.getElementById('add-aluno-modal').style.display = 'flex';
+            addAlunoModal.style.display = 'flex';
         });
         document.getElementById('close-add-modal-btn').addEventListener('click', () => {
-            document.getElementById('add-aluno-modal').style.display = 'none';
+            addAlunoModal.style.display = 'none';
         });
         document.getElementById('cancel-add-btn').addEventListener('click', () => {
-            document.getElementById('add-aluno-modal').style.display = 'none';
+            addAlunoModal.style.display = 'none';
         });
 
         document.getElementById('add-aluno-form').addEventListener('submit', async (e) => {
@@ -175,32 +537,90 @@
                 alert('O nome deve ter entre 1 e 150 caracteres!');
                 return;
             }
-            const resp = await fetch(`${API_BASE}/alunos/user/${userId}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nome, ra, turmaIds: [turmaId] })
-            });
-            if (!resp.ok) {
-                const data = await resp.json();
-                alert(data.message || 'Erro ao cadastrar aluno!');
-                return;
+            try {
+                const resp = await fetch(`${API_BASE}/alunos/user/${userId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome, ra, turmaIds: [turmaId] })
+                });
+                if (!resp.ok) {
+                    const data = await resp.json();
+                    throw new Error(data.message || 'Erro ao cadastrar aluno!');
+                }
+                addAlunoModal.style.display = 'none';
+                document.getElementById('add-aluno-form').reset();
+                loadNotasInterface();
+            } catch (err) {
+                alert(err.message);
             }
-            document.getElementById('add-aluno-modal').style.display = 'none';
-            loadNotasInterface();
         });
 
+        document.getElementById('open-import-modal-btn').addEventListener('click', () => {
+            importModal.style.display = 'flex';
+        });
+        document.getElementById('close-import-modal-btn').addEventListener('click', () => {
+            importModal.style.display = 'none';
+        });
+        document.getElementById('cancel-import-btn').addEventListener('click', () => {
+            importModal.style.display = 'none';
+        });
+
+        importForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('csv-file');
+            if (!fileInput.files[0]) {
+                alert('Por favor, selecione um arquivo CSV.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('arquivo', fileInput.files[0]); 
+
+            try {
+                const resp = await fetch(`${API_BASE}/turmas/${turmaId}/importar-alunos/user/${userId}`, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!resp.ok) {
+                    const errData = await resp.json();
+                    throw new Error(errData.message || 'Erro no servidor durante a importação.');
+                }
+
+                const result = await resp.json();
+                alert(`Importação concluída!`);
+
+                importForm.reset();
+                importModal.style.display = 'none';
+                loadNotasInterface(); 
+
+            } catch (err) {
+                console.error('Erro na importação:', err);
+                alert(`Erro ao importar: ${err.message}`);
+            }
+        });
+        
         document.getElementById('tabela-notas').addEventListener('change', async (e) => {
             if (e.target.classList.contains('input-nota')) {
                 const idAluno = e.target.dataset.aluno;
                 const idComp = e.target.dataset.comp;
                 const valor = parseFloat(e.target.value);
+                
+                // validação simples
+                if (valor < 0 || valor > 10) {
+                    alert("Nota deve ser entre 0 e 10.");
+                    loadNotasInterface(); 
+                    return;
+                }
+
                 await fetch(`${API_BASE}/notas/lancar`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         idAluno,
                         idComponenteNota: idComp,
-                        valor,
+                        valor: isNaN(valor) ? null : valor, 
                         idTurma: turmaId
                     })
                 });
@@ -223,6 +643,85 @@
                     ul.appendChild(li);
                 });
             });
+
+        document.getElementById('exportar-notas-btn').addEventListener('click', async () => {
+            if (!turmaId || !disciplinaId) {
+                alert('ID da turma ou disciplina não encontrado.');
+                return;
+            }
+
+            const btnExportar = document.getElementById('exportar-notas-btn');
+            
+            btnExportar.disabled = true;
+            btnExportar.textContent = 'Validando...';
+
+            try {
+                const validacaoResp = await fetch(
+                    `${API_BASE}/notas/validar/${turmaId}/disciplina/${disciplinaId}`
+                );
+
+                if (!validacaoResp.ok) {
+                    throw new Error('Erro ao validar notas');
+                }
+
+                const validacao = await validacaoResp.json();
+
+                if (!validacao.completas) {
+                    alert(
+                        `Não é possível exportar!\n\n` +
+                        `Existem alunos com notas incompletas:\n\n` +
+                        `${validacao.alunosIncompletos.join('\n')}`
+                    );
+                    btnExportar.disabled = false;
+                    btnExportar.textContent = 'Exportar Notas';
+                    return;
+                }
+
+                btnExportar.textContent = 'Exportando...';
+
+                const exportResp = await fetch(
+                    `${API_BASE}/notas/exportar/${turmaId}/disciplina/${disciplinaId}`,
+                    { method: 'POST' }
+                );
+
+                if (!exportResp.ok) {
+                    const errData = await exportResp.json();
+                    throw new Error(errData.message || 'Erro ao exportar notas');
+                }
+
+                const blob = await exportResp.blob();
+                
+                const contentDisposition = exportResp.headers.get('Content-Disposition');
+                let fileName = 'notas_turma.csv';
+                
+                if (contentDisposition) {
+                    const match = contentDisposition.match(/filename="?(.+)"?/i);
+                    if (match && match[1]) {
+                        fileName = match[1];
+                    }
+                }
+
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                alert('Notas exportadas com sucesso!');
+
+            } catch (err) {
+                console.error('Erro na exportação:', err);
+                alert(`Erro: ${err.message}`);
+            } finally {
+                // Reabilitar botão
+                btnExportar.disabled = false;
+                btnExportar.textContent = 'Exportar Notas';
+            }
+        });
 
         loadNotasInterface();
     </script>

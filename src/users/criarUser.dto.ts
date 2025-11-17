@@ -1,3 +1,6 @@
+// Feito por: Davi Froza
+
+
 import { IsEmail, IsNotEmpty, IsString, MinLength } from "class-validator";
 
 

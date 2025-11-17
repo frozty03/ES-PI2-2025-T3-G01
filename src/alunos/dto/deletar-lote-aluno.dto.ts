@@ -1,3 +1,5 @@
+// Feito por: Davi Froza 
+
 import { IsArray, IsUUID, IsNotEmpty } from 'class-validator';
 
 export class DeletarLoteAlunoDTO {

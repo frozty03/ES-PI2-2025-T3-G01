@@ -1,3 +1,5 @@
+// Feito por: Davi Froza 
+
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from "@nestjs/common";
 import { CriarAlunoDTO } from "./dto/criar-aluno.dto";
 import { AtualizarAlunoDTO } from "./dto/atualizar-aluno.dto";
@@ -32,21 +34,23 @@ export class AlunoController {
     }
 
 
-    @Delete('/lote/user/:userId')
+    @Delete('/lote/turma/:turmaId/user/:userId')
     @HttpCode(HttpStatus.OK)
     async deletarLote(
         @Param('userId') userId: string,
+        @Param('turmaId') turmaId: string,
         @Body() deletarLoteAlunoDto: DeletarLoteAlunoDTO
         ) {
-        return await this.alunoService.deletarLote(userId, deletarLoteAlunoDto);
+        return await this.alunoService.deletarLote(userId, turmaId, deletarLoteAlunoDto);
         }
 
-    @Delete('/:id/user/:userId')
+    @Delete('/:id/turma/:turmaId/user/:userId')
     async deletarAluno (
         @Param('id') id: string,
-        @Param('userId') userId: string 
+        @Param('userId') userId: string,
+        @Param('turmaId') turmaId: string 
     ) { 
-        return await this.alunoService.deletarAluno(id, userId);
+        return await this.alunoService.deletarAluno(id, userId, turmaId);
     }
 
     @Put('/:id/user/:userId')

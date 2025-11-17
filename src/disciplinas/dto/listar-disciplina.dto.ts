@@ -1,4 +1,6 @@
-// Desenvolvido por Davi Alves Froza
+// Feito por:  Davi Froza
+
+
 export class ListarDisciplinaDTO {
     constructor(
         readonly id: string,
