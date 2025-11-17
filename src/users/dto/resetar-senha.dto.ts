@@ -1,3 +1,4 @@
+// Desenvolvido Julia Da Silva Maia
 import { IsNotEmpty, IsString, MinLength } from 'class-validator';
 
 export class ResetarSenhaDto {

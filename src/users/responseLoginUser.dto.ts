@@ -1,3 +1,4 @@
+// Feito por: Davi Froza
 export class LoginResponseDTO {
     acess_token: string;
     id: string;

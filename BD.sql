@@ -360,3 +360,12 @@ CREATE TRIGGER trigger_auditar_notas
 AFTER INSERT OR UPDATE ON public."Notas_Aluno_Turma_Componente"
 FOR EACH ROW
 EXECUTE FUNCTION auditar_notas();
+
+ALTER TABLE public."Log_Auditoria_Notas"
+DROP CONSTRAINT fk_log_aluno;
+
+ALTER TABLE public."Log_Auditoria_Notas"
+ADD CONSTRAINT fk_log_aluno
+FOREIGN KEY (id_aluno)
+REFERENCES public."Alunos"(id)
+ON DELETE CASCADE;

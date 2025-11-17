@@ -1,4 +1,4 @@
-// Desenvolvido por Miguel Afonso Castro de Almeida
+// Lucas Presendo Canhete
 import { IsArray, IsNotEmpty, IsUUID } from 'class-validator';
 
 export class ImportarAlunosDTO {

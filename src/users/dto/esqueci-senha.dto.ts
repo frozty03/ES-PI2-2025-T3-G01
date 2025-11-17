@@ -1,3 +1,4 @@
+// Desenvolvido Julia Da Silva Maia
 import { IsEmail, IsNotEmpty } from 'class-validator';
 
 export class EsqueciSenhaDto {
