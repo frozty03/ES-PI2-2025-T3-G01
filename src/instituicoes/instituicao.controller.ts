@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Post, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Delete, Put } from '@nestjs/common';
 import { InstituicaoService } from './instituicao.service';
 import { CreateInstituicaoDto } from './criarInstituicao.dto';
 import { ListInstituicoesByUserDto } from './list-instituicoes-by-user.dto';
+import { AtualizarInstituicaoDTO } from './atualizarInstituicao.dto';
 
 @Controller('instituicoes')
 export class InstituicaoController {
@@ -30,5 +31,19 @@ export class InstituicaoController {
     @Param('userId') userId: string,
   ): Promise<ListInstituicoesByUserDto> {
     return this.instituicaoService.findByUserId(userId);
+  }
+
+  @Put(':id/user/:userId')
+  async atualizarInstituicao(
+    @Param('id') id: string,
+    @Param('userId') userId: string,
+    @Body() atualizarInstituicaoDTO: AtualizarInstituicaoDTO
+  ) {
+      const instituicao = await this.instituicaoService.atualizarInstituicao(id, userId, atualizarInstituicaoDTO);
+
+      return {
+        instituicao,
+        message: 'Instituicao atualizada com sucesso!'
+      }
   }
 }

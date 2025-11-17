@@ -5,6 +5,7 @@ import { CursoEntity } from './curso.entity';
 import { InstituicaoEntity } from '../instituicoes/instituicao.entity';
 import { CriarCursoDto } from './criar-curso.dto';
 import { ListarCursoDto } from './listar-curso.dto';
+import { AtualizarCursoDto } from './atualizar-curso.dto';
 
 @Injectable()
 export class CursoService {
@@ -85,4 +86,35 @@ export class CursoService {
     }
     await this.cursoRepository.remove(curso);
   }
+
+  async buscarCursoId(id: string, userId: string): Promise<CursoEntity> {
+            const curso = await this.cursoRepository
+                .createQueryBuilder('curso')
+                .innerJoin('curso.instituicoes', 'instituicao')
+                .innerJoin('instituicao.users', 'user')
+                .leftJoinAndSelect('curso.instituicoes', 'instituicoes')
+                .where('curso.id = :id', { id })
+                .andWhere('user.id = :userId', { userId })
+                .getOne(); 
+    
+            if (!curso) {
+                throw new NotFoundException('Curso não encontrado');
+            }
+    
+            return curso;
+        }
+  
+    async atualizarCurso(
+            id: string,
+            userId: string,
+            atualizarCursoDTO: AtualizarCursoDto
+        ): Promise<CursoEntity> {
+            const curso = await this.buscarCursoId(id, userId);
+    
+            Object.assign(curso, {
+                nome: atualizarCursoDTO.nome ?? curso.nome
+            }); 
+    
+            return await this.cursoRepository.save(curso);
+        }
 }

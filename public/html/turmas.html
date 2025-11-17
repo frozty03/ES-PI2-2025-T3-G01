@@ -102,7 +102,11 @@
             function renderTurmasGrid(turmas) {
                 turmasGrid.innerHTML = '';
                 if (!turmas.length) {
-                    turmasGrid.innerHTML = '<p>Nenhuma turma cadastrada para esta disciplina.</p>';
+                    turmasGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding-top: 50px; color: black;">
+                        <p>Nenhuma turma cadastrada para esta disciplina.</p>
+                    </div>
+                `;
                     return;
                 }
                 turmas.forEach(turma => {

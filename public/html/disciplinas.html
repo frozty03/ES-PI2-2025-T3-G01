@@ -186,7 +186,11 @@
         function renderDisciplineGrid() {
             disciplinesGrid.innerHTML = '';
             if (!disciplines.length) {
-                disciplinesGrid.innerHTML = '<p>Nenhuma disciplina cadastrada para este curso.</p>';
+                disciplinesGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding-top: 50px; color: black;">
+                        <p>Nenhuma disciplina cadastrada para este curso.</p>
+                    </div>
+                `;
                 return;
             }
             disciplines.forEach(discipline => {
