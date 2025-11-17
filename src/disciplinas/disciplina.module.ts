@@ -1,3 +1,4 @@
+// Desenvolvido por Davi Alves Froza
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DisciplinasEntity } from "./disciplinas.entity";

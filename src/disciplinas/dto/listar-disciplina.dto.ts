@@ -1,3 +1,4 @@
+// Desenvolvido por Davi Alves Froza
 export class ListarDisciplinaDTO {
     constructor(
         readonly id: string,

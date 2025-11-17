@@ -1,3 +1,4 @@
+// Desenvolvido por Davi Alves Froza
 import { IsArray, IsNotEmpty, IsNumber, IsString, IsUUID, Length } from "class-validator";
 import { CriarComponenteNotaDTO } from "./criar-componente-nota.dto"
 
